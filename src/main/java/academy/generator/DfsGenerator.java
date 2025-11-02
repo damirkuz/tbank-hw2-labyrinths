@@ -1,42 +1,32 @@
 package academy.generator;
 
-import academy.maze.dto.CellType;
 import academy.maze.dto.Maze;
 import academy.maze.dto.Point;
+
 import java.util.List;
 import java.util.Stack;
 
-public class DfsGenerator implements Generator {
 
-//    Достать из стека клетку и считать ее текущей
-//    Если среди четырех клеток, смежных с текущей, имеются те, которые еще не были посещены:
-//    Отправить текущую клетку в стек
-//    Случайным образом выбрать одну из соседних непосещенных клеток
-//    Удалить стенку между текущей и выбранной клеткой
-//    Отметить выбранную клетку как посещенную и отправить ее в стек
+public class DfsGenerator extends BaseGenerator {
 
     @Override
     public Maze generate(int width, int height) {
-        Maze maze = GeneratorUtil.getGrid(width, height);
-        GeneratorUtil.fill(maze, CellType.WALL);
-
+        Maze maze = initializeMaze(width, height);
         Point start = GeneratorUtil.getStartPoint(width, height);
 
         Stack<Point> stack = new Stack<>();
-
-        GeneratorUtil.markCell(maze, start, CellType.PATH);
+        GeneratorUtil.markCell(maze, start, academy.maze.dto.CellType.PATH);
         stack.push(start);
 
-        while (!stack.empty()) {
-
-            Point nowPoint = stack.peek();
-            List<Point> neighbours = GeneratorUtil.getUnvisitedNeighbours(maze, nowPoint);
-            if (neighbours.isEmpty()) {
+        while (!stack.isEmpty()) {
+            Point cur = stack.peek();
+            List<Point> unvisited = getUnvisitedNeighbors(maze, cur);
+            if (unvisited.isEmpty()) {
                 stack.pop();
             } else {
-                Point secondPoint = GeneratorUtil.getRandomPointFromList(neighbours);
-                GeneratorUtil.markBetweenInclusivePoints(nowPoint, secondPoint, CellType.PATH, maze);
-                stack.push(secondPoint);
+                Point next = pickRandom(unvisited);
+                carvePassage(maze, cur, next);
+                stack.push(next);
             }
         }
 

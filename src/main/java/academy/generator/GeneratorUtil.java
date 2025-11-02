@@ -3,14 +3,16 @@ package academy.generator;
 import academy.maze.dto.CellType;
 import academy.maze.dto.Maze;
 import academy.maze.dto.Point;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
+
 public class GeneratorUtil {
 
-    private static final Random random = new Random();
+    public static final Random random = new Random();
 
     public static void fill(Maze maze, CellType value) {
         for (int i = 0; i < maze.cells().length; i++) {
@@ -31,22 +33,23 @@ public class GeneratorUtil {
         return (index - 1) / 2;
     }
 
-
     public static Point getStartPoint(int width, int height) {
-        return new Point(random.nextInt(width ), random.nextInt(height));
+        return new Point(random.nextInt(width), random.nextInt(height));
     }
 
-
     public static void markCell(Maze maze, Point point, CellType cellType) {
-        maze.cells()[toGrid(point.y())][toGrid( point.x())] = cellType;
+        maze.cells()[toGrid(point.y())][toGrid(point.x())] = cellType;
     }
 
 
     public static List<Point> getUnvisitedNeighbours(Maze maze, Point point) {
-        return getPointNeighbours(point).stream()
-            .filter(p -> pointInMaze(p, maze))
-            .filter(p -> getPointType(p, maze).equals(CellType.WALL))
-            .toList();
+        List<Point> res = new ArrayList<>(4);
+        for (Point p : getPointNeighbours(point)) {
+            if (pointInMaze(p, maze) && getPointType(p, maze) == CellType.WALL) {
+                res.add(p);
+            }
+        }
+        return res;
     }
 
     public static Point getRandomPointFromList(List<Point> points) {
@@ -60,23 +63,28 @@ public class GeneratorUtil {
         markCell(maze, second, cellType);
     }
 
-    private static CellType getPointType(Point point, Maze maze) {
+    public static CellType getPointType(Point point, Maze maze) {
         return maze.cells()[toGrid(point.y())][toGrid(point.x())];
     }
 
-    private static List<Point> getPointNeighbours(Point point) {
-        List<Point> neighbours = new ArrayList<>();
-        neighbours.add(new Point(point.x(), point.y() + 1));
-        neighbours.add(new Point(point.x(), point.y() - 1));
-        neighbours.add(new Point(point.x() - 1, point.y()));
-        neighbours.add(new Point(point.x() + 1, point.y()));
+    public static List<Point> getPointNeighbours(Point point) {
+        List<Point> neighbours = new ArrayList<>(4);
+        neighbours.add(new Point(point.x(), point.y() - 1)); // UP
+        neighbours.add(new Point(point.x(), point.y() + 1)); // DOWN
+        neighbours.add(new Point(point.x() - 1, point.y())); // LEFT
+        neighbours.add(new Point(point.x() + 1, point.y())); // RIGHT
         return neighbours;
     }
 
-    private static boolean pointInMaze(Point point, Maze maze) {
+    public static boolean pointInMaze(Point point, Maze maze) {
         int width = fromGrid(maze.cells()[0].length);
         int height = fromGrid(maze.cells().length);
         return point.x() >= 0 && point.y() >= 0 && point.x() < width && point.y() < height;
     }
 
+    public static Point nextInDirection(Point from, Point to) {
+        int dx = to.x() - from.x();
+        int dy = to.y() - from.y();
+        return new Point(to.x() + dx, to.y() + dy);
+    }
 }
