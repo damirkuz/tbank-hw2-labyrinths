@@ -44,7 +44,7 @@ public class AStarSolver extends BaseSolver {
             openSet.remove(current);
             closedSet.add(current);
 
-            // Релаксация соседей
+
             for (Point nb : neighbors4(current, maze)) {
                 if (cell(maze, nb) == CellType.WALL || closedSet.contains(nb)) continue;
 
