@@ -21,7 +21,7 @@ public abstract class BaseGenerator implements Generator {
 
     protected void validateDimensions(int width, int height) {
         if (width <= 0 || height <= 0) {
-            throw new IllegalArgumentException("Width and height must be positive");
+            throw new IllegalArgumentException("Длина и ширина должны быть положительными");
         }
     }
 
