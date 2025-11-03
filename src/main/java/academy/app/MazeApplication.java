@@ -14,12 +14,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.Optional;
 
 /**
  * Главное приложение для работы с лабиринтами.
- * Поддерживает команды:
- * - generate: генерирует новый лабиринт
- * - solve: решает существующий лабиринт
+ * Поддерживает:
+ * - generate: генерация лабиринта
+ * - solveFromFile: решение из файла
+ * - solveFromString: решение из ASCII-строки (renderer.render)
  */
 public class MazeApplication {
 
@@ -29,60 +31,91 @@ public class MazeApplication {
     private final MazeFileWriter writer = new MazeFileWriter();
     private final MazeFileReader reader = new MazeFileReader();
 
-    public void generate(String algorithm, int width, int height, String outputFile) {
+
+    public Optional<String> generate(String algorithm, int width, int height, String outputFile) {
         try {
             InputValidator.validateDimensions(width, height);
 
-            // Создаём нужный генератор
             Generator generator = createGenerator(algorithm);
             if (generator == null) {
                 log.error("Ошибка: неизвестный алгоритм генерации '{}'", algorithm);
                 log.error("Доступные алгоритмы: dfs, prim, prim_simplified, prim_modified");
-                return;
+                return Optional.empty();
             }
 
-            // Генерируем лабиринт
             log.info("Генерирую лабиринт {}x{} методом {}...", width, height, algorithm);
             Maze maze = generator.generate(width, height);
 
-            // Выводим или сохраняем результат
             if (outputFile != null && !outputFile.isEmpty()) {
-                writer.write(maze, outputFile);
-                log.info("Лабиринт сохранён в файл: {}", outputFile);
+                try {
+                    writer.write(maze, outputFile);
+                    log.info("Лабиринт сохранён в файл: {}", outputFile);
+                    return Optional.empty();
+                } catch (IOException io) {
+                    log.error("Не удалось сохранить в файл '{}': {}", outputFile, io.getMessage());
+                    String mazeString = renderer.render(maze);
+                    log.info("Вывожу лабиринт в консоль:\n{}", mazeString);
+                    return Optional.of(mazeString);
+                }
             } else {
-                log.info("Сгенерированный лабиринт:");
-                // Сам ASCII-рендер выводим в info, чтобы видеть в логе
-                log.info("\n{}", renderer.render(maze));
+                String mazeString = renderer.render(maze);
+                log.info("Сгенерированный лабиринт:\n{}", mazeString);
+                return Optional.of(mazeString);
             }
 
         } catch (IllegalArgumentException e) {
             log.error("Ошибка валидации: {}", e.getMessage());
-        } catch (IOException e) {
-            log.error("Ошибка при работе с файлом: {}", e.getMessage());
         } catch (Exception e) {
             log.error("Неожиданная ошибка генерации", e);
         }
+        return Optional.empty();
     }
 
-    public void solve(String algorithm, String inputFile, String startStr, String endStr, String outputFile) {
+
+    // Точка входа из файла или строки
+    public Optional<String> solve(String algorithm, String inputFile, String startStr, String endStr, String outputFile) {
+        return solveInternal(algorithm, inputFile, null, startStr, endStr, outputFile);
+    }
+
+    public Optional<String> solveFromFile(String algorithm, String inputFile, String startStr, String endStr, String outputFile) {
+        return solveInternal(algorithm, inputFile, null, startStr, endStr, outputFile);
+    }
+
+    public Optional<String> solveFromString(String algorithm, String mazeText, String startStr, String endStr, String outputFile) {
+        return solveInternal(algorithm, null, mazeText, startStr, endStr, outputFile);
+    }
+
+    // Внутренний общий метод
+    private Optional<String> solveInternal(String algorithm,
+                                           String inputFile,
+                                           String mazeText,
+                                           String startStr,
+                                           String endStr,
+                                           String outputFile) {
         try {
             Point start = InputValidator.parsePoint(startStr);
             Point end = InputValidator.parsePoint(endStr);
 
-            log.info("Читаю лабиринт из файла: {}", inputFile);
-            Maze maze = reader.read(inputFile);
+            // Загрузка лабиринта: либо из файла, либо из строки
+            Maze maze;
+            if (mazeText != null) {
+                log.info("Читаю лабиринт из строки (render)");
+                maze = loadMazeFromString(mazeText);
+            } else {
+                log.info("Читаю лабиринт из файла: {}", inputFile);
+                maze = reader.read(inputFile);
+            }
 
-            if (start.x() >= maze.cells()[0].length || start.y() >= maze.cells().length ||
-                end.x() >= maze.cells()[0].length || end.y() >= maze.cells().length) {
+            if (!validateBounds(maze, start, end)) {
                 log.error("Ошибка: координаты выходят за границы лабиринта");
-                return;
+                return Optional.empty();
             }
 
             Solver solver = createSolver(algorithm);
             if (solver == null) {
                 log.error("Ошибка: неизвестный алгоритм решения '{}'", algorithm);
                 log.error("Доступные алгоритмы: dijkstra, astar");
-                return;
+                return Optional.empty();
             }
 
             log.info("Ищу путь от {} к {} методом {}...", startStr, endStr, algorithm);
@@ -90,19 +123,27 @@ public class MazeApplication {
 
             if (path == null || path.points().length == 0) {
                 log.warn("Решение не найдено — пути нет");
-                return;
+                return Optional.empty();
             }
 
             markPathOnMaze(maze, path, start, end);
+            String mazeString = renderer.render(maze);
 
             if (outputFile != null && !outputFile.isEmpty()) {
-                writer.write(maze, outputFile);
-                log.info("Решение сохранено в файл: {}", outputFile);
-                log.info("Длина пути: {}", path.points().length);
+                try {
+                    writer.write(maze, outputFile);
+                    log.info("Решение сохранено в файл: {}", outputFile);
+                    log.info("Длина пути: {}", path.points().length);
+                    return Optional.of(mazeString);
+                } catch (IOException io) {
+                    log.error("Не удалось записать решение в файл '{}': {}", outputFile, io.getMessage());
+                    log.info("Вывожу решение в консоль:\n{}", mazeString);
+                    return Optional.of(mazeString);
+                }
             } else {
-                log.info("Лабиринт с решением:");
-                log.info("\n{}", renderer.render(maze));
+                log.info("Лабиринт с решением:\n{}", mazeString);
                 log.info("Длина пути: {}", path.points().length);
+                return Optional.of(mazeString);
             }
 
         } catch (IllegalArgumentException e) {
@@ -112,6 +153,55 @@ public class MazeApplication {
         } catch (Exception e) {
             log.error("Неожиданная ошибка при решении лабиринта", e);
         }
+        return Optional.empty();
+    }
+
+
+    private boolean validateBounds(Maze maze, Point start, Point end) {
+        int H = maze.cells().length;
+        int W = maze.cells()[0].length;
+        return start.x() >= 0 && start.y() >= 0 && end.x() >= 0 && end.y() >= 0
+            && start.x() < W && end.x() < W && start.y() < H && end.y() < H;
+    }
+
+    private Maze loadMazeFromString(String text) {
+        if (text == null || text.isBlank()) {
+            throw new IllegalArgumentException("Пустой текст лабиринта");
+        }
+        String norm = text.replace("\r\n", "\n");
+        String[] lines = norm.split("\n", -1);
+        if (lines.length > 0 && lines[lines.length - 1].isEmpty()) {
+            String[] tmp = new String[lines.length - 1];
+            System.arraycopy(lines, 0, tmp, 0, lines.length - 1);
+            lines = tmp;
+        }
+        if (lines.length == 0) throw new IllegalArgumentException("Пустой текст лабиринта");
+
+        int height = lines.length;
+        int width = lines[0].length();
+        CellType[][] cells = new CellType[height][width];
+        for (int y = 0; y < height; y++) {
+            String line = lines[y];
+            if (line.length() != width) {
+                throw new IllegalArgumentException("Неравномерная длина строк лабиринта");
+            }
+            for (int x = 0; x < width; x++) {
+                char ch = line.charAt(x);
+                cells[y][x] = charToCell(ch);
+            }
+        }
+        return new Maze(cells);
+    }
+
+    private CellType charToCell(char ch) {
+        return switch (ch) {
+            case '#' -> CellType.WALL;
+            case ' ' -> CellType.PATH;
+            case 'O' -> CellType.START;
+            case 'X' -> CellType.END;
+            case '.' -> CellType.ROUTE;
+            default -> CellType.WALL;
+        };
     }
 
     private void markPathOnMaze(Maze maze, academy.maze.dto.Path path, Point start, Point end) {
@@ -122,7 +212,6 @@ public class MazeApplication {
                 maze.cells()[p.y()][p.x()] = CellType.ROUTE;
             }
         }
-
         maze.cells()[start.y()][start.x()] = CellType.START;
         maze.cells()[end.y()][end.x()] = CellType.END;
     }

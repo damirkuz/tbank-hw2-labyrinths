@@ -1,6 +1,7 @@
 package academy;
 
 import academy.app.MazeApplication;
+import academy.console.ConsoleUI;
 import picocli.CommandLine;
 import picocli.*;
 import picocli.CommandLine.*;
@@ -16,8 +17,13 @@ public class Main implements Runnable {
 
     @Override
     public void run() {
-        // Выводим справку при запуске без команд
-        System.out.println("Используйте 'maze --help' для справки");
+        // Запускаем консольный режим при запуске без параметров
+        ConsoleUI ui = new ConsoleUI();
+        try {
+            ui.start();
+        } finally {
+            ui.close();
+        }
     }
 
     public static void main(String[] args) {
