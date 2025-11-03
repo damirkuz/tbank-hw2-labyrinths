@@ -65,31 +65,42 @@ public class Main implements Runnable {
     @Command(name = "solve", description = "Решает лабиринт")
     static class SolveCommand implements Runnable {
 
-        @Option(names = {"--algorithm", "-a"}, required = true,
-            description = "Алгоритм решения: dijkstra, astar")
+        @Option(
+                names = {"--algorithm", "-a"},
+                required = true,
+                description = "Алгоритм решения: dijkstra, astar")
         String algorithm;
 
-        @Option(names = {"--file", "-f"}, description = "Файл с лабиринтом")
+        @Option(
+                names = {"--file", "-f"},
+                description = "Файл с лабиринтом")
         String file;
 
-        @Option(names = {"-t", "--text"},
-            description = "Лабиринтный ASCII-текст (рендеринг) вместо файла")
+        @Option(
+                names = {"-t", "--text"},
+                description = "Лабиринтный ASCII-текст (рендеринг) вместо файла")
         String text;
 
-        @Option(names = {"--start", "-s"}, required = true,
-            description = "Начальная точка в формате x,y")
+        @Option(
+                names = {"--start", "-s"},
+                required = true,
+                description = "Начальная точка в формате x,y")
         String start;
 
-        @Option(names = {"--end", "-e"}, required = true,
-            description = "Конечная точка в формате x,y")
+        @Option(
+                names = {"--end", "-e"},
+                required = true,
+                description = "Конечная точка в формате x,y")
         String end;
 
-        @Option(names = {"--output", "-o"},
-            description = "Файл для сохранения решения (опционально)")
+        @Option(
+                names = {"--output", "-o"},
+                description = "Файл для сохранения решения (опционально)")
         String output;
 
-        @Option(names = {"-u", "--unicode"},
-            description = "Рендер с помощью Unicode псевдографики")
+        @Option(
+                names = {"-u", "--unicode"},
+                description = "Рендер с помощью Unicode псевдографики")
         boolean unicode;
 
         @Override
@@ -126,5 +137,4 @@ public class Main implements Runnable {
             }
         }
     }
-
 }
