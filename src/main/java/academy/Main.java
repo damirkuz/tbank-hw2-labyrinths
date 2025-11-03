@@ -24,7 +24,7 @@ public class Main implements Runnable {
         System.exit(exitCode);
     }
 
-    @Command(name = "generate", description = "Генерирует лабиринт")
+    @Command(name = "generate", description = "Generate a maze with specified algorithm and dimensions.")
     static class GenerateCommand implements Runnable {
 
         @Option(
@@ -40,7 +40,7 @@ public class Main implements Runnable {
         int width;
 
         @Option(
-                names = {"--height"},
+                names = {"--height", "-h"},
                 description = "Высота лабиринта",
                 required = true)
         int height;
@@ -62,50 +62,48 @@ public class Main implements Runnable {
         }
     }
 
-    /** Команда для решения лабиринта */
     @Command(name = "solve", description = "Решает лабиринт")
     static class SolveCommand implements Runnable {
 
-        @Option(
-                names = {"--algorithm", "-a"},
-                description = "Алгоритм решения: dijkstra, astar",
-                required = true)
+        @Option(names = {"--algorithm", "-a"}, required = true,
+            description = "Алгоритм решения: dijkstra, astar")
         String algorithm;
 
-        @Option(
-                names = {"--file", "-f"},
-                description = "Файл с лабиринтом")
+        @Option(names = {"--file", "-f"}, description = "Файл с лабиринтом")
         String file;
 
-        @Option(
-                names = {"-t", "--text"},
-                description = "Лабиринтный ASCII-текст (рендеринг) вместо файла")
+        @Option(names = {"-t", "--text"},
+            description = "Лабиринтный ASCII-текст (рендеринг) вместо файла")
         String text;
 
-        @Option(
-                names = {"--start", "-s"},
-                description = "Начальная точка в формате x,y",
-                required = true)
+        @Option(names = {"--start", "-s"}, required = true,
+            description = "Начальная точка в формате x,y")
         String start;
 
-        @Option(
-                names = {"--end", "-e"},
-                description = "Конечная точка в формате x,y",
-                required = true)
+        @Option(names = {"--end", "-e"}, required = true,
+            description = "Конечная точка в формате x,y")
         String end;
 
-        @Option(
-                names = {"--output", "-o"},
-                description = "Файл для сохранения решения (опционально)")
+        @Option(names = {"--output", "-o"},
+            description = "Файл для сохранения решения (опционально)")
         String output;
 
-        @Option(
-                names = {"-u", "--unicode"},
-                description = "Рендер с помощью Unicode псевдографики")
+        @Option(names = {"-u", "--unicode"},
+            description = "Рендер с помощью Unicode псевдографики")
         boolean unicode;
 
         @Override
         public void run() {
+            // Предвалидация для точного сообщения и отсутствия стека
+            if (isValidPoint(start)) {
+                System.out.println("Invalid point format: " + start + ", expected format: x,y");
+                return;
+            }
+            if (isValidPoint(end)) {
+                System.out.println("Invalid point format: " + end + ", expected format: x,y");
+                return;
+            }
+
             MazeApplication app = new MazeApplication();
             if (text != null && !text.isBlank()) {
                 app.solveFromString(algorithm, text, start, end, output, unicode);
@@ -113,5 +111,20 @@ public class Main implements Runnable {
                 app.solveFromFile(algorithm, file, start, end, output, unicode);
             }
         }
+
+        // Допускаем пробелы вокруг запятой и знаки минус; запрещаем всё остальное
+        private static boolean isValidPoint(String p) {
+            if (p == null) return true;
+            String[] parts = p.trim().split("\\s*,\\s*");
+            if (parts.length != 2) return true;
+            try {
+                Integer.parseInt(parts[0]);
+                Integer.parseInt(parts[1]);
+                return false;
+            } catch (NumberFormatException e) {
+                return true;
+            }
+        }
     }
+
 }
