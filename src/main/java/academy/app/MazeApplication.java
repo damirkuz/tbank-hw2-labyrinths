@@ -42,7 +42,7 @@ public class MazeApplication {
             if (outputFile != null && !outputFile.isEmpty()) {
                 try {
                     writer.write(maze, outputFile);
-                    log.info("Лабиринт сохранён в файл: {}", outputFile);
+//                    log.info("Лабиринт сохранён в файл: {}", outputFile);
                     return Optional.empty();
                 } catch (IOException ioe) {
                     log.error("Не удалось сохранить в файл '{}': {}", outputFile, ioe.getMessage());

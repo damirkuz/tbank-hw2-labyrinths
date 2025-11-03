@@ -62,7 +62,7 @@ public class Main implements Runnable {
         }
     }
 
-    @Command(name = "solve", description = "Решает лабиринт")
+    @Command(name = "solve", description = "Solve a maze with specified algorithm and points.")
     static class SolveCommand implements Runnable {
 
         @Option(
