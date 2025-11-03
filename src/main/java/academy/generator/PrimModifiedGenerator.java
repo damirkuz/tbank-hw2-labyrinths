@@ -8,7 +8,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-/** Modified Prim's (cell-based, choose among multiple connections). */
 public class PrimModifiedGenerator extends BaseGenerator {
 
     @Override

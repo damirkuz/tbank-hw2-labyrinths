@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Главное приложение для работы с лабиринтами. Поддерживает: - generate: генерация лабиринта - solveFromFile: решение
- * из файла - solveFromString: решение из ASCII-строки (renderer.render)
+ * из файла - solveFromString: решение из ASCII-строки (render)
  */
 public class MazeApplication {
 

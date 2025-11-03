@@ -32,7 +32,6 @@ public class ConsoleUI {
         }
     }
 
-    /** Печатает главное меню (упрощённый вывод) */
     private void printMainMenu() {
         System.out.println("Главное меню:");
         System.out.println("  1. Сгенерировать лабиринт");
@@ -41,7 +40,6 @@ public class ConsoleUI {
         System.out.print("Ваш выбор: ");
     }
 
-    /** Обрабатывает генерацию лабиринта */
     private void generateMaze() {
         System.out.println("\n=== Генерация лабиринта ===\n");
 
@@ -91,7 +89,6 @@ public class ConsoleUI {
         return s.equals("y") || s.equals("yes");
     }
 
-    /** Обрабатывает решение лабиринта */
     private void solveMaze(String mazeText, boolean unicode) {
         System.out.println("\n=== Решение лабиринта ===\n");
 

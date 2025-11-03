@@ -105,7 +105,6 @@ public class Main implements Runnable {
 
         @Override
         public void run() {
-            // Предвалидация для точного сообщения и отсутствия стека
             if (isValidPoint(start)) {
                 System.out.println("Invalid point format: " + start + ", expected format: x,y");
                 return;
