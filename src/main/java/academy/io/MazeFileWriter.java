@@ -6,11 +6,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-
 public class MazeFileWriter {
 
     private final ConsoleMazeRenderer renderer = new ConsoleMazeRenderer();
-
 
     public void write(Maze maze, String filename) throws IOException {
         String content = renderer.render(maze);

@@ -1,14 +1,10 @@
 package academy.maze.dto;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
-
-/**
- * Тесты для DTOs (Data Transfer Objects)
- * Проверяют корректность работы основных сущностей
- */
 @DisplayName("DTO Tests")
 class MazeDTOTest {
 
@@ -108,11 +104,7 @@ class MazeDTOTest {
     @Test
     @DisplayName("Path создаётся с массивом точек")
     void testPathCreation() {
-        Point[] points = {
-            new Point(0, 0),
-            new Point(1, 1),
-            new Point(2, 2)
-        };
+        Point[] points = {new Point(0, 0), new Point(1, 1), new Point(2, 2)};
         Path path = new Path(points);
         assertEquals(3, path.points().length);
         assertEquals(points[0], path.points()[0]);
@@ -221,8 +213,8 @@ class MazeDTOTest {
         Point start = new Point(0, 0);
         Point mid = new Point(1, 1);
         Point end = new Point(2, 2);
-        
-        Path path = new Path(new Point[]{start, mid, end});
+
+        Path path = new Path(new Point[] {start, mid, end});
         assertEquals(3, path.points().length);
         assertEquals(start, path.points()[0]);
         assertEquals(mid, path.points()[1]);
@@ -235,7 +227,7 @@ class MazeDTOTest {
         CellType[][] cells = new CellType[2][2];
         cells[0][0] = CellType.WALL;
         Maze maze = new Maze(cells);
-        
+
         // Изменяем ячейку
         maze.cells()[0][0] = CellType.PATH;
         assertEquals(CellType.PATH, maze.cells()[0][0]);

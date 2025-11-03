@@ -1,13 +1,8 @@
 package academy.console;
 
 import academy.app.MazeApplication;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-
 import java.util.Optional;
 import java.util.Scanner;
-
 
 public class ConsoleUI {
     private final Scanner scanner;
@@ -17,7 +12,6 @@ public class ConsoleUI {
         this.scanner = new Scanner(System.in);
         this.app = new MazeApplication();
     }
-
 
     public void start() {
         while (true) {
@@ -38,9 +32,7 @@ public class ConsoleUI {
         }
     }
 
-    /**
-     * Печатает главное меню (упрощённый вывод)
-     */
+    /** Печатает главное меню (упрощённый вывод) */
     private void printMainMenu() {
         System.out.println("Главное меню:");
         System.out.println("  1. Сгенерировать лабиринт");
@@ -49,9 +41,7 @@ public class ConsoleUI {
         System.out.print("Ваш выбор: ");
     }
 
-    /**
-     * Обрабатывает генерацию лабиринта
-     */
+    /** Обрабатывает генерацию лабиринта */
     private void generateMaze() {
         System.out.println("\n=== Генерация лабиринта ===\n");
 
@@ -64,16 +54,17 @@ public class ConsoleUI {
         System.out.print("Выберите алгоритм (1-4): ");
 
         String algoChoice = scanner.nextLine().trim();
-        String algorithm = switch (algoChoice) {
-            case "1" -> "dfs";
-            case "2" -> "prim";
-            case "3" -> "prim_simplified";
-            case "4" -> "prim_modified";
-            default -> {
-                System.out.println("Неверный выбор. Используется DFS.");
-                yield "dfs";
-            }
-        };
+        String algorithm =
+                switch (algoChoice) {
+                    case "1" -> "dfs";
+                    case "2" -> "prim";
+                    case "3" -> "prim_simplified";
+                    case "4" -> "prim_modified";
+                    default -> {
+                        System.out.println("Неверный выбор. Используется DFS.");
+                        yield "dfs";
+                    }
+                };
 
         // Ввод размеров
         int width = readPositiveInt("Введите ширину лабиринта: ");
@@ -106,9 +97,7 @@ public class ConsoleUI {
         return s.equals("y") || s.equals("yes");
     }
 
-    /**
-     * Обрабатывает решение лабиринта
-     */
+    /** Обрабатывает решение лабиринта */
     private void solveMaze(String mazeText, boolean unicode) {
         System.out.println("\n=== Решение лабиринта ===\n");
 
@@ -119,14 +108,15 @@ public class ConsoleUI {
         System.out.print("Выберите алгоритм (1-2): ");
 
         String algoChoice = scanner.nextLine().trim();
-        String algorithm = switch (algoChoice) {
-            case "1" -> "dijkstra";
-            case "2" -> "astar";
-            default -> {
-                System.out.println("Неверный выбор. Используется Dijkstra.");
-                yield "dijkstra";
-            }
-        };
+        String algorithm =
+                switch (algoChoice) {
+                    case "1" -> "dijkstra";
+                    case "2" -> "astar";
+                    default -> {
+                        System.out.println("Неверный выбор. Используется Dijkstra.");
+                        yield "dijkstra";
+                    }
+                };
 
         // Координаты
         System.out.print("Введите начальную точку (формат: x,y): ");
@@ -146,14 +136,14 @@ public class ConsoleUI {
         }
 
         // Решение
-        Optional<String> solutionString = app.solveFromString(algorithm, mazeText, startStr, endStr, outputFile, unicode);
+        Optional<String> solutionString =
+                app.solveFromString(algorithm, mazeText, startStr, endStr, outputFile, unicode);
         if (solutionString.isEmpty()) {
             System.out.println("Решения нет");
         } else {
             System.out.println(solutionString.get());
         }
     }
-
 
     private void showHelp() {
         System.out.println("\nСправка");
@@ -197,5 +187,4 @@ public class ConsoleUI {
     public void close() {
         scanner.close();
     }
-
 }

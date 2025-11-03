@@ -2,10 +2,8 @@ package academy.generator;
 
 import academy.maze.dto.Maze;
 import academy.maze.dto.Point;
-
 import java.util.List;
 import java.util.Stack;
-
 
 public class DfsGenerator extends BaseGenerator {
 

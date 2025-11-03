@@ -3,12 +3,9 @@ package academy.generator;
 import academy.maze.dto.CellType;
 import academy.maze.dto.Maze;
 import academy.maze.dto.Point;
-
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
 
 public abstract class BaseGenerator implements Generator {
 
@@ -49,12 +46,10 @@ public abstract class BaseGenerator implements Generator {
         }
     }
 
-
     protected <T> T pickRandom(List<T> list) {
         int idx = GeneratorUtil.random.nextInt(list.size());
         return list.get(idx);
     }
-
 
     protected <T> T pickRandomAndRemove(List<T> list) {
         int idx = GeneratorUtil.random.nextInt(list.size());

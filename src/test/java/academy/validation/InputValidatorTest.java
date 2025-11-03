@@ -1,10 +1,9 @@
 package academy.validation;
 
-import academy.maze.dto.Point;
-import org.junit.jupiter.api.Test;
-
 import static org.junit.jupiter.api.Assertions.*;
 
+import academy.maze.dto.Point;
+import org.junit.jupiter.api.Test;
 
 class InputValidatorTest {
 

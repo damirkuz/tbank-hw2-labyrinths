@@ -3,12 +3,10 @@ package academy.generator;
 import academy.maze.dto.CellType;
 import academy.maze.dto.Maze;
 import academy.maze.dto.Point;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
-
 
 public class GeneratorUtil {
 
@@ -40,7 +38,6 @@ public class GeneratorUtil {
     public static void markCell(Maze maze, Point point, CellType cellType) {
         maze.cells()[toGrid(point.y())][toGrid(point.x())] = cellType;
     }
-
 
     public static List<Point> getUnvisitedNeighbours(Maze maze, Point point) {
         List<Point> res = new ArrayList<>(4);

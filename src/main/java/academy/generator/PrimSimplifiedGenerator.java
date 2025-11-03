@@ -2,9 +2,7 @@ package academy.generator;
 
 import academy.maze.dto.Maze;
 
-/**
- * Simplified Prim's (cell-based frontier).
- */
+/** Simplified Prim's (cell-based frontier). */
 public class PrimSimplifiedGenerator extends BaseGenerator {
 
     @Override

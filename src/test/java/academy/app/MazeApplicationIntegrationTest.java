@@ -1,13 +1,11 @@
 package academy.app;
 
+import static org.junit.jupiter.api.Assertions.*;
+
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.*;
-
 
 @DisplayName("MazeApplication Integration Tests")
 class MazeApplicationIntegrationTest {

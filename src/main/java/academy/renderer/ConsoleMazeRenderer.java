@@ -3,14 +3,12 @@ package academy.renderer;
 import academy.maze.dto.CellType;
 import academy.maze.dto.Maze;
 
-
 public class ConsoleMazeRenderer implements MazeRenderer {
 
     @Override
     public String render(Maze maze) {
         StringBuilder sb = new StringBuilder();
         CellType[][] cells = maze.cells();
-
 
         for (CellType[] row : cells) {
             for (CellType cell : row) {
@@ -21,7 +19,6 @@ public class ConsoleMazeRenderer implements MazeRenderer {
 
         return sb.toString();
     }
-
 
     private char cellToChar(CellType cellType) {
         if (cellType == null) {

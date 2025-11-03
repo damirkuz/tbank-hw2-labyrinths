@@ -2,12 +2,10 @@ package academy.io;
 
 import academy.maze.dto.CellType;
 import academy.maze.dto.Maze;
-import academy.maze.dto.Point;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
-
 
 public class MazeFileReader {
 
@@ -19,10 +17,8 @@ public class MazeFileReader {
             throw new IOException("Файл пуст");
         }
 
-
         int height = lines.size();
         int width = lines.getFirst().length();
-
 
         CellType[][] cells = new CellType[height][width];
 
@@ -37,7 +33,6 @@ public class MazeFileReader {
 
         return new Maze(cells);
     }
-
 
     private CellType charToCell(char ch) {
         return switch (ch) {

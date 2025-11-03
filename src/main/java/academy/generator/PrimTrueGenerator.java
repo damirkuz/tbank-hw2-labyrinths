@@ -3,13 +3,11 @@ package academy.generator;
 import academy.maze.dto.CellType;
 import academy.maze.dto.Maze;
 import academy.maze.dto.Point;
-
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
-
 
 public class PrimTrueGenerator extends BaseGenerator {
 
@@ -70,8 +68,7 @@ public class PrimTrueGenerator extends BaseGenerator {
             }
             CellType t1 = GeneratorUtil.getPointType(a, maze);
             CellType t2 = GeneratorUtil.getPointType(b, maze);
-            return (t1 == CellType.PATH && t2 == CellType.WALL) ||
-                (t1 == CellType.WALL && t2 == CellType.PATH);
+            return (t1 == CellType.PATH && t2 == CellType.WALL) || (t1 == CellType.WALL && t2 == CellType.PATH);
         }
 
         Point getVisitedCell(Maze maze) {

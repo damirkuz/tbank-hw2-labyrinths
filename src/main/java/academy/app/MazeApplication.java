@@ -11,18 +11,14 @@ import academy.renderer.MazeRenderer;
 import academy.renderer.UnicodeMazeRenderer;
 import academy.solver.*;
 import academy.validation.InputValidator;
+import java.io.IOException;
+import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.util.Optional;
-
 /**
- * Главное приложение для работы с лабиринтами.
- * Поддерживает:
- * - generate: генерация лабиринта
- * - solveFromFile: решение из файла
- * - solveFromString: решение из ASCII-строки (renderer.render)
+ * Главное приложение для работы с лабиринтами. Поддерживает: - generate: генерация лабиринта - solveFromFile: решение
+ * из файла - solveFromString: решение из ASCII-строки (renderer.render)
  */
 public class MazeApplication {
 
@@ -70,23 +66,33 @@ public class MazeApplication {
     }
 
     // solveFromFile/solveFromString – тоже с флагом
-    public Optional<String> solveFromFile(String algorithm, String inputFile, String startStr, String endStr, String outputFile, boolean unicode) {
+    public Optional<String> solveFromFile(
+            String algorithm, String inputFile, String startStr, String endStr, String outputFile, boolean unicode) {
         return solveInternal(algorithm, inputFile, null, startStr, endStr, outputFile, unicode);
     }
-    public Optional<String> solveFromString(String algorithm, String mazeText, String startStr, String endStr, String outputFile, boolean unicode) {
+
+    public Optional<String> solveFromString(
+            String algorithm, String mazeText, String startStr, String endStr, String outputFile, boolean unicode) {
         return solveInternal(algorithm, null, mazeText, startStr, endStr, outputFile, unicode);
     }
     // старые методы сохраняем
     public Optional<String> solveFromFile(String a, String f, String s, String e, String o) {
         return solveInternal(a, f, null, s, e, o, false);
     }
+
     public Optional<String> solveFromString(String a, String t, String s, String e, String o) {
         return solveInternal(a, null, t, s, e, o, false);
     }
 
     // внутри solveInternal в местах рендера используем выбранный рендерер
-    private Optional<String> solveInternal(String algorithm, String inputFile, String mazeText,
-                                           String startStr, String endStr, String outputFile, boolean unicode) {
+    private Optional<String> solveInternal(
+            String algorithm,
+            String inputFile,
+            String mazeText,
+            String startStr,
+            String endStr,
+            String outputFile,
+            boolean unicode) {
         try {
             Point start = InputValidator.parsePoint(startStr);
             Point end = InputValidator.parsePoint(endStr);
@@ -122,12 +128,17 @@ public class MazeApplication {
         }
     }
 
-
     private boolean validateBounds(Maze maze, Point start, Point end) {
         int H = maze.cells().length;
         int W = maze.cells()[0].length;
-        return start.x() >= 0 && start.y() >= 0 && end.x() >= 0 && end.y() >= 0
-            && start.x() < W && end.x() < W && start.y() < H && end.y() < H;
+        return start.x() >= 0
+                && start.y() >= 0
+                && end.x() >= 0
+                && end.y() >= 0
+                && start.x() < W
+                && end.x() < W
+                && start.y() < H
+                && end.y() < H;
     }
 
     private Maze loadMazeFromString(String text) {
