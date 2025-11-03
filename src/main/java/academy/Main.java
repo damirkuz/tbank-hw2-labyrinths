@@ -112,7 +112,7 @@ public class Main implements Runnable {
 
         @Override
         public void run() {
-            MazeApplication app = new academy.app.MazeApplication();
+            MazeApplication app = new MazeApplication();
             if (text != null && !text.isBlank()) {
                 app.solveFromString(algorithm, text, start, end, output, unicode);
             } else {

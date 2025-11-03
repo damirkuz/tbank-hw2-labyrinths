@@ -82,8 +82,7 @@ public class PrimTrueGenerator extends BaseGenerator {
         @Override
         public boolean equals(Object o) {
             if (this == o) return true;
-            if (!(o instanceof Wall)) return false;
-            Wall wall = (Wall) o;
+            if (!(o instanceof Wall wall)) return false;
             return a.equals(wall.a) && b.equals(wall.b);
         }
 

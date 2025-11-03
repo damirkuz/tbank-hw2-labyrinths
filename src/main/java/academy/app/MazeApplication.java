@@ -13,6 +13,7 @@ import academy.solver.*;
 import academy.validation.InputValidator;
 import java.io.IOException;
 import java.util.Optional;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,7 +25,6 @@ public class MazeApplication {
 
     private static final Logger log = LoggerFactory.getLogger(MazeApplication.class);
 
-    private final MazeRenderer renderer = new ConsoleMazeRenderer();
     private final MazeFileWriter writer = new MazeFileWriter();
     private final MazeFileReader reader = new MazeFileReader();
     private final MazeRenderer asciiRenderer = new ConsoleMazeRenderer();
@@ -47,12 +47,12 @@ public class MazeApplication {
                 } catch (IOException ioe) {
                     log.error("Не удалось сохранить в файл '{}': {}", outputFile, ioe.getMessage());
                     String out = (unicode ? unicodeRenderer : asciiRenderer).render(maze);
-                    log.info("\n{}", out);
+                    log.info("Лабиринт:\n{}", out);
                     return Optional.of(out);
                 }
             } else {
                 String out = (unicode ? unicodeRenderer : asciiRenderer).render(maze);
-                log.info("\n{}", out);
+                log.info("Лабиринт:\n{}", out);
                 return Optional.of(out);
             }
         } catch (Exception e) {
@@ -74,10 +74,6 @@ public class MazeApplication {
     public Optional<String> solveFromString(
             String algorithm, String mazeText, String startStr, String endStr, String outputFile, boolean unicode) {
         return solveInternal(algorithm, null, mazeText, startStr, endStr, outputFile, unicode);
-    }
-    // старые методы сохраняем
-    public Optional<String> solveFromFile(String a, String f, String s, String e, String o) {
-        return solveInternal(a, f, null, s, e, o, false);
     }
 
     public Optional<String> solveFromString(String a, String t, String s, String e, String o) {
@@ -115,11 +111,11 @@ public class MazeApplication {
                     return Optional.empty();
                 } catch (IOException ioe) {
                     log.error("Не удалось записать решение в файл '{}': {}", outputFile, ioe.getMessage());
-                    log.info("\n{}", out);
+                    log.info("Лабиринт:\n{}", out);
                     return Optional.of(out);
                 }
             } else {
-                log.info("\n{}", out);
+                log.info("Лабиринт\n{}", out);
                 return Optional.of(out);
             }
         } catch (Exception e) {
@@ -171,8 +167,12 @@ public class MazeApplication {
     }
 
     private CellType charToCell(char ch) {
+        return getCellType(ch);
+    }
+
+    @NotNull
+    public static CellType getCellType(char ch) {
         return switch (ch) {
-            case '#' -> CellType.WALL;
             case ' ' -> CellType.PATH;
             case 'O' -> CellType.START;
             case 'X' -> CellType.END;

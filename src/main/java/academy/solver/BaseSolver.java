@@ -12,10 +12,10 @@ public abstract class BaseSolver implements Solver {
 
     // Валидация: точки внутри поля и не стены
     protected boolean validateEndpoints(Maze maze, Point start, Point end) {
-        return isInside(maze, start)
-                && isInside(maze, end)
-                && cell(maze, start) != CellType.WALL
-                && cell(maze, end) != CellType.WALL;
+        return !isInside(maze, start)
+                || !isInside(maze, end)
+                || cell(maze, start) == CellType.WALL
+                || cell(maze, end) == CellType.WALL;
     }
 
     // Восстановление пути из таблицы previous (идём от конца к началу)

@@ -1,17 +1,19 @@
 package academy.io;
 
+import static academy.app.MazeApplication.getCellType;
+
 import academy.maze.dto.CellType;
 import academy.maze.dto.Maze;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.nio.file.Path;
 import java.util.List;
 
 public class MazeFileReader {
 
     public Maze read(String filename) throws IOException {
         // Читаем все строки из файла
-        List<String> lines = Files.readAllLines(Paths.get(filename));
+        List<String> lines = Files.readAllLines(Path.of(filename));
 
         if (lines.isEmpty()) {
             throw new IOException("Файл пуст");
@@ -35,13 +37,6 @@ public class MazeFileReader {
     }
 
     private CellType charToCell(char ch) {
-        return switch (ch) {
-            case '#' -> CellType.WALL;
-            case ' ' -> CellType.PATH;
-            case 'O' -> CellType.START;
-            case 'X' -> CellType.END;
-            case '.' -> CellType.ROUTE;
-            default -> CellType.WALL;
-        };
+        return getCellType(ch);
     }
 }

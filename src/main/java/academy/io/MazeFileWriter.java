@@ -4,7 +4,7 @@ import academy.maze.dto.Maze;
 import academy.renderer.ConsoleMazeRenderer;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.nio.file.Path;
 
 public class MazeFileWriter {
 
@@ -12,6 +12,6 @@ public class MazeFileWriter {
 
     public void write(Maze maze, String filename) throws IOException {
         String content = renderer.render(maze);
-        Files.write(Paths.get(filename), content.getBytes());
+        Files.write(Path.of(filename), content.getBytes());
     }
 }

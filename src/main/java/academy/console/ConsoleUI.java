@@ -74,25 +74,19 @@ public class ConsoleUI {
 
         // Генерация
         System.out.println();
-        Optional<String> mazeString = app.generate(algorithm, width, height, null, unicode);
-        System.out.println(mazeString.get());
+        Optional<String> mazeMaybe = app.generate(algorithm, width, height, null, unicode);
 
-        // Опциональное решение лабиринта
-
-        boolean solutionChoice = askSomething("Желаете решить лабиринт?");
-        if (solutionChoice) {
-            solveMaze(mazeString.get(), unicode);
-        }
+        mazeMaybe.ifPresent(ms -> {
+            System.out.println(ms);
+            boolean solutionChoice = askSomething("Желаете решить лабиринт?");
+            if (solutionChoice) {
+                solveMaze(ms, unicode);
+            }
+        });
     }
 
     private boolean askSomething(String question) {
         System.out.print(question + " (y/n): ");
-        String s = scanner.nextLine().trim().toLowerCase();
-        return s.equals("y") || s.equals("yes");
-    }
-
-    private boolean askUnicode() {
-        System.out.print("Включить псевдографику Unicode? (y/n): ");
         String s = scanner.nextLine().trim().toLowerCase();
         return s.equals("y") || s.equals("yes");
     }
@@ -135,14 +129,8 @@ public class ConsoleUI {
             }
         }
 
-        // Решение
-        Optional<String> solutionString =
-                app.solveFromString(algorithm, mazeText, startStr, endStr, outputFile, unicode);
-        if (solutionString.isEmpty()) {
-            System.out.println("Решения нет");
-        } else {
-            System.out.println(solutionString.get());
-        }
+        app.solveFromString(algorithm, mazeText, startStr, endStr, outputFile, unicode)
+                .ifPresentOrElse(System.out::println, () -> System.out.println("Решения нет"));
     }
 
     private void showHelp() {

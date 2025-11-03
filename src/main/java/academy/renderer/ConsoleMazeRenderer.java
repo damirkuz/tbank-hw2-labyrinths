@@ -27,7 +27,6 @@ public class ConsoleMazeRenderer implements MazeRenderer {
 
         return switch (cellType) {
             case WALL -> '#';
-            case PATH -> ' ';
             case START -> 'O';
             case END -> 'X';
             case ROUTE -> '.';

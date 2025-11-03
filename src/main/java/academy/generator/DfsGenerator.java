@@ -2,8 +2,9 @@ package academy.generator;
 
 import academy.maze.dto.Maze;
 import academy.maze.dto.Point;
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.List;
-import java.util.Stack;
 
 public class DfsGenerator extends BaseGenerator {
 
@@ -12,7 +13,7 @@ public class DfsGenerator extends BaseGenerator {
         Maze maze = initializeMaze(width, height);
         Point start = GeneratorUtil.getStartPoint(width, height);
 
-        Stack<Point> stack = new Stack<>();
+        Deque<Point> stack = new ArrayDeque<>();
         GeneratorUtil.markCell(maze, start, academy.maze.dto.CellType.PATH);
         stack.push(start);
 

@@ -54,9 +54,22 @@ public class GeneratorUtil {
     }
 
     public static void markBetweenInclusivePoints(Point first, Point second, CellType cellType, Maze maze) {
-        int betweenX = (toGrid(first.x()) + toGrid(second.x())) / 2;
-        int betweenY = (toGrid(first.y()) + toGrid(second.y())) / 2;
-        maze.cells()[betweenY][betweenX] = cellType;
+        int x1 = toGrid(first.x());
+        int x2 = toGrid(second.x());
+        int y1 = toGrid(first.y());
+        int y2 = toGrid(second.y());
+
+        int betweenX = x1 + ((x2 - x1) / 2);
+        int betweenY = y1 + ((y2 - y1) / 2);
+
+        CellType[][] cells = maze.cells();
+        int h = cells.length;
+        int w = cells[0].length;
+
+        if (betweenX >= 0 && betweenY >= 0 && betweenX < w && betweenY < h) {
+            cells[betweenY][betweenX] = cellType;
+        }
+
         markCell(maze, second, cellType);
     }
 
@@ -77,11 +90,5 @@ public class GeneratorUtil {
         int width = fromGrid(maze.cells()[0].length);
         int height = fromGrid(maze.cells().length);
         return point.x() >= 0 && point.y() >= 0 && point.x() < width && point.y() < height;
-    }
-
-    public static Point nextInDirection(Point from, Point to) {
-        int dx = to.x() - from.x();
-        int dy = to.y() - from.y();
-        return new Point(to.x() + dx, to.y() + dy);
     }
 }

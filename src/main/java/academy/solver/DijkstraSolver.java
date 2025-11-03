@@ -11,7 +11,7 @@ public class DijkstraSolver extends BaseSolver {
     @Override
     public Path solve(Maze maze, Point start, Point end) {
 
-        if (!validateEndpoints(maze, start, end)) return null;
+        if (validateEndpoints(maze, start, end)) return null;
 
         Map<Point, Integer> dist = new HashMap<>(); // расстояния
         Map<Point, Point> previous = new HashMap<>(); // для пути

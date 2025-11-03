@@ -11,7 +11,7 @@ public class AStarSolver extends BaseSolver {
     @Override
     public Path solve(Maze maze, Point start, Point end) {
 
-        if (!validateEndpoints(maze, start, end)) return null;
+        if (validateEndpoints(maze, start, end)) return null;
 
         Map<Point, Integer> gScore = new HashMap<>(); // g: от старта
         Map<Point, Integer> fScore = new HashMap<>(); // f: g + h
@@ -48,7 +48,7 @@ public class AStarSolver extends BaseSolver {
                 if (cell(maze, nb) == CellType.WALL || closedSet.contains(nb)) continue;
 
                 int curG = gScore.getOrDefault(current, Integer.MAX_VALUE);
-                int tentativeG = (curG == Integer.MAX_VALUE ? Integer.MAX_VALUE : curG + 1);
+                int tentativeG = curG == Integer.MAX_VALUE ? Integer.MAX_VALUE : curG + 1;
                 int oldG = gScore.getOrDefault(nb, Integer.MAX_VALUE);
 
                 if (tentativeG < oldG) {
