@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 import picocli.CommandLine.Parameters;
@@ -36,8 +35,7 @@ public class Application implements Runnable {
     private File configPath;
 
     public static void main(String[] args) {
-        int exitCode = new CommandLine(new Application()).execute(args);
-        System.exit(exitCode);
+        Main.main(args);
     }
 
     @Override
