@@ -79,25 +79,37 @@ public class ConsoleUI {
         int width = readPositiveInt("Введите ширину лабиринта: ");
         int height = readPositiveInt("Введите высоту лабиринта: ");
 
+        boolean unicode = askSomething("Включить псевдографику Unicode?");
 
         // Генерация
         System.out.println();
-        Optional<String> mazeString = app.generate(algorithm, width, height, null);
+        Optional<String> mazeString = app.generate(algorithm, width, height, null, unicode);
         System.out.println(mazeString.get());
 
         // Опциональное решение лабиринта
-        System.out.print("Желаете решить лабиринт? (y/n): ");
-        String saveChoice = scanner.nextLine().trim().toLowerCase();
 
-        if (saveChoice.equals("y") || saveChoice.equals("yes")) {
-            solveMaze(mazeString.get());
+        boolean solutionChoice = askSomething("Желаете решить лабиринт?");
+        if (solutionChoice) {
+            solveMaze(mazeString.get(), unicode);
         }
+    }
+
+    private boolean askSomething(String question) {
+        System.out.print(question + " (y/n): ");
+        String s = scanner.nextLine().trim().toLowerCase();
+        return s.equals("y") || s.equals("yes");
+    }
+
+    private boolean askUnicode() {
+        System.out.print("Включить псевдографику Unicode? (y/n): ");
+        String s = scanner.nextLine().trim().toLowerCase();
+        return s.equals("y") || s.equals("yes");
     }
 
     /**
      * Обрабатывает решение лабиринта
      */
-    private void solveMaze(String mazeText) {
+    private void solveMaze(String mazeText, boolean unicode) {
         System.out.println("\n=== Решение лабиринта ===\n");
 
         // Выбор алгоритма
@@ -124,9 +136,8 @@ public class ConsoleUI {
         String endStr = scanner.nextLine().trim();
 
         String outputFile = null;
-        System.out.print("Сохранить решение в файл? (y/n): ");
-        String saveChoice = scanner.nextLine().trim().toLowerCase();
-        if (saveChoice.equals("y") || saveChoice.equals("yes")) {
+        boolean saveChoice = askSomething("Сохранить решение в файл?");
+        if (saveChoice) {
             System.out.print("Введите имя файла (например, solution.txt): ");
             outputFile = scanner.nextLine().trim();
             if (outputFile.isEmpty()) {
@@ -135,7 +146,7 @@ public class ConsoleUI {
         }
 
         // Решение
-        Optional<String> solutionString = app.solveFromString(algorithm, mazeText, startStr, endStr, outputFile);
+        Optional<String> solutionString = app.solveFromString(algorithm, mazeText, startStr, endStr, outputFile, unicode);
         if (solutionString.isEmpty()) {
             System.out.println("Решения нет");
         } else {

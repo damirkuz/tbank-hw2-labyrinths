@@ -65,10 +65,16 @@ public class Main implements Runnable {
         )
         String output;
 
+        @Option(
+            names = {"-u","--unicode"},
+            description = "Рендер с помощью Unicode псевдографики")
+        boolean unicode;
+
+
         @Override
         public void run() {
             MazeApplication app = new MazeApplication();
-            app.generate(algorithm, width, height, output);
+            app.generate(algorithm, width, height, output, unicode);
         }
     }
 
@@ -96,6 +102,11 @@ public class Main implements Runnable {
         String file;
 
         @Option(
+            names = {"-t","--text"},
+            description = "Лабиринтный ASCII-текст (рендеринг) вместо файла")
+        String text;
+
+        @Option(
             names = {"--start", "-s"},
             description = "Начальная точка в формате x,y",
             required = true
@@ -115,10 +126,18 @@ public class Main implements Runnable {
         )
         String output;
 
-        @Override
-        public void run() {
-            MazeApplication app = new MazeApplication();
-            app.solve(algorithm, file, start, end, output);
+        @Option(
+            names = {"-u","--unicode"},
+            description = "Рендер с помощью Unicode псевдографики")
+        boolean unicode;
+
+        @Override public void run() {
+            MazeApplication app = new academy.app.MazeApplication();
+            if (text != null && !text.isBlank()) {
+                app.solveFromString(algorithm, text, start, end, output, unicode);
+            } else {
+                app.solveFromFile(algorithm, file, start, end, output, unicode);
+            }
         }
     }
 }
