@@ -24,7 +24,7 @@ class MazeApplicationIntegrationTest {
     void testGenerateDFS() {
         Optional<String> result = app.generate("dfs", 5, 5, null);
         assertTrue(result.isPresent(), "Генерация DFS должна вернуть результат");
-        String maze = result.get();
+        String maze = result.orElseThrow(() -> new AssertionError("Лабиринт не сгенерировался для DFS"));
         assertTrue(maze.contains("#"), "Лабиринт должен содержать стены");
         assertTrue(maze.contains(" "), "Лабиринт должен содержать проходы");
     }
@@ -34,7 +34,8 @@ class MazeApplicationIntegrationTest {
     void testGeneratePrim() {
         Optional<String> result = app.generate("prim", 7, 7, null);
         assertTrue(result.isPresent(), "Генерация Prim должна вернуть результат");
-        assertNotNull(result.get(), "Строка не должна быть null");
+        String value = result.orElseThrow(() -> new AssertionError("Лабиринт не сгенерировался для Prim"));
+        assertNotNull(value, "Строка не должна быть null");
     }
 
     @Test
@@ -91,15 +92,11 @@ class MazeApplicationIntegrationTest {
     @Test
     @DisplayName("Решение Dijkstra из строки работает")
     void testSolveFromString() {
-        // Генерируем лабиринт
         Optional<String> mazeOpt = app.generate("dfs", 5, 5, null);
         assertTrue(mazeOpt.isPresent());
-
-        String maze = mazeOpt.get();
+        String maze = mazeOpt.orElseThrow(() -> new AssertionError("Лабиринт не сгенерировался"));
         Optional<String> solution = app.solveFromString("dijkstra", maze, "1,1", "3,3", null);
-
-        // Решение может быть не найдено, но ошибок не должно быть
-        // assertTrue(solution.isPresent() || solution.isEmpty());
+        assertNotNull(solution);
     }
 
     @Test
@@ -107,8 +104,7 @@ class MazeApplicationIntegrationTest {
     void testSolveAStarFromString() {
         Optional<String> mazeOpt = app.generate("prim", 7, 7, null);
         assertTrue(mazeOpt.isPresent());
-
-        String maze = mazeOpt.get();
+        String maze = mazeOpt.orElseThrow(() -> new AssertionError("Лабиринт не сгенерировался"));
         Optional<String> solution = app.solveFromString("astar", maze, "1,1", "5,5", null);
         assertNotNull(solution);
     }
@@ -117,7 +113,7 @@ class MazeApplicationIntegrationTest {
     @DisplayName("Решение с неизвестным алгоритмом возвращает пусто")
     void testSolveUnknownAlgorithm() {
         Optional<String> mazeOpt = app.generate("dfs", 5, 5, null);
-        String maze = mazeOpt.get();
+        String maze = mazeOpt.orElseThrow(() -> new AssertionError("Лабиринт не сгенерировался"));
         Optional<String> solution = app.solveFromString("unknown", maze, "1,1", "3,3", null);
         assertTrue(solution.isEmpty());
     }
@@ -126,7 +122,7 @@ class MazeApplicationIntegrationTest {
     @DisplayName("Решение с неверным форматом координат выбрасывает исключение")
     void testSolveInvalidCoordinateFormat() {
         Optional<String> mazeOpt = app.generate("dfs", 5, 5, null);
-        String maze = mazeOpt.get();
+        String maze = mazeOpt.orElseThrow(() -> new AssertionError("Лабиринт не сгенерировался"));
         Optional<String> solution = app.solveFromString("dijkstra", maze, "invalid", "1,1", null);
         assertTrue(solution.isEmpty());
     }
@@ -135,7 +131,7 @@ class MazeApplicationIntegrationTest {
     @DisplayName("Решение с координатами за границами возвращает пусто")
     void testSolveOutOfBounds() {
         Optional<String> mazeOpt = app.generate("dfs", 5, 5, null);
-        String maze = mazeOpt.get();
+        String maze = mazeOpt.orElseThrow(() -> new AssertionError("Лабиринт не сгенерировался"));
         Optional<String> solution = app.solveFromString("dijkstra", maze, "100,100", "1,1", null);
         assertTrue(solution.isEmpty());
     }
@@ -144,7 +140,7 @@ class MazeApplicationIntegrationTest {
     @DisplayName("Решение с одинаковыми стартом и финишем работает")
     void testSolveSameStartEnd() {
         Optional<String> mazeOpt = app.generate("dfs", 5, 5, null);
-        String maze = mazeOpt.get();
+        String maze = mazeOpt.orElseThrow(() -> new AssertionError("Лабиринт не сгенерировался"));
         Optional<String> solution = app.solveFromString("dijkstra", maze, "1,1", "1,1", null);
         assertTrue(solution.isPresent() || solution.isEmpty());
     }
@@ -155,8 +151,7 @@ class MazeApplicationIntegrationTest {
     @DisplayName("Парсинг правильных координат работает")
     void testParseCorrectCoordinates() {
         Optional<String> mazeOpt = app.generate("dfs", 5, 5, null);
-        String maze = mazeOpt.get();
-        // Попытка решить с валидными координатами
+        String maze = mazeOpt.orElseThrow(() -> new AssertionError("Лабиринт не сгенерировался"));
         Optional<String> solution = app.solveFromString("dijkstra", maze, "1,1", "2,2", null);
         assertNotNull(solution);
     }
@@ -165,7 +160,7 @@ class MazeApplicationIntegrationTest {
     @DisplayName("Парсинг координат с пробелами работает")
     void testParseCoordinatesWithSpaces() {
         Optional<String> mazeOpt = app.generate("dfs", 5, 5, null);
-        String maze = mazeOpt.get();
+        String maze = mazeOpt.orElseThrow(() -> new AssertionError("Лабиринт не сгенерировался"));
         Optional<String> solution = app.solveFromString("dijkstra", maze, " 1 , 1 ", " 2 , 2 ", null);
         assertNotNull(solution);
     }
@@ -174,9 +169,8 @@ class MazeApplicationIntegrationTest {
     @DisplayName("Парсинг нулевых координат работает")
     void testParseZeroCoordinates() {
         Optional<String> mazeOpt = app.generate("dfs", 5, 5, null);
-        String maze = mazeOpt.get();
+        String maze = mazeOpt.orElseThrow(() -> new AssertionError("Лабиринт не сгенерировался"));
         Optional<String> solution = app.solveFromString("dijkstra", maze, "0,0", "1,1", null);
-        // Может быть стена на (0,0), но ошибки парсинга не должно быть
         assertNotNull(solution);
     }
 
@@ -185,12 +179,14 @@ class MazeApplicationIntegrationTest {
     @Test
     @DisplayName("Полный сценарий: генерация и решение DFS+Dijkstra")
     void testFullScenarioDFSDijkstra() {
-        // Генерируем
         Optional<String> mazeOpt = app.generate("dfs", 10, 10, null);
         assertTrue(mazeOpt.isPresent());
-
-        // Решаем
-        Optional<String> solution = app.solveFromString("dijkstra", mazeOpt.get(), "1,1", "8,8", null);
+        Optional<String> solution = app.solveFromString(
+                "dijkstra",
+                mazeOpt.orElseThrow(() -> new AssertionError("Лабиринт не сгенерировался")),
+                "1,1",
+                "8,8",
+                null);
         assertNotNull(solution);
     }
 
@@ -199,8 +195,12 @@ class MazeApplicationIntegrationTest {
     void testFullScenarioPrimAStar() {
         Optional<String> mazeOpt = app.generate("prim", 10, 10, null);
         assertTrue(mazeOpt.isPresent());
-
-        Optional<String> solution = app.solveFromString("astar", mazeOpt.get(), "1,1", "8,8", null);
+        Optional<String> solution = app.solveFromString(
+                "astar",
+                mazeOpt.orElseThrow(() -> new AssertionError("Лабиринт не сгенерировался")),
+                "1,1",
+                "8,8",
+                null);
         assertNotNull(solution);
     }
 
@@ -227,8 +227,7 @@ class MazeApplicationIntegrationTest {
     @DisplayName("Совместимость алгоритмов решения: все работают")
     void testAllSolvingAlgorithms() {
         Optional<String> mazeOpt = app.generate("dfs", 7, 7, null);
-        String maze = mazeOpt.get();
-
+        String maze = mazeOpt.orElseThrow(() -> new AssertionError("Лабиринт не сгенерировался"));
         String[] algorithms = {"dijkstra", "astar", "a*"};
         for (String algo : algorithms) {
             Optional<String> result = app.solveFromString(algo, maze, "1,1", "5,5", null);
@@ -242,8 +241,10 @@ class MazeApplicationIntegrationTest {
         Optional<String> maze1 = app.generate("dfs", 5, 5, null);
         Optional<String> maze2 = app.generate("prim", 5, 5, null);
 
-        Optional<String> sol1 = app.solveFromString("dijkstra", maze1.get(), "1,1", "3,3", null);
-        Optional<String> sol2 = app.solveFromString("dijkstra", maze2.get(), "1,1", "3,3", null);
+        Optional<String> sol1 = app.solveFromString(
+                "dijkstra", maze1.orElseThrow(() -> new AssertionError("maze1 пуст")), "1,1", "3,3", null);
+        Optional<String> sol2 = app.solveFromString(
+                "dijkstra", maze2.orElseThrow(() -> new AssertionError("maze2 пуст")), "1,1", "3,3", null);
 
         assertNotNull(sol1);
         assertNotNull(sol2);
