@@ -1,17 +1,16 @@
 package academy;
 
 import academy.app.MazeApplication;
-import academy.console.ConsoleUI;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 
 @Command(
-    name = "maze-app",
-    version = "1.0",
-    description = "Maze generator and solver CLI application.",
-    mixinStandardHelpOptions = true,
-    subcommands = {Main.GenerateCommand.class, Main.SolveCommand.class})
+        name = "maze-app",
+        version = "1.0",
+        description = "Maze generator and solver CLI application.",
+        mixinStandardHelpOptions = true,
+        subcommands = {Main.GenerateCommand.class, Main.SolveCommand.class})
 public class Main implements Runnable {
 
     @Override
@@ -29,31 +28,31 @@ public class Main implements Runnable {
     static class GenerateCommand implements Runnable {
 
         @Option(
-            names = {"--algorithm", "-a"},
-            description = "Алгоритм генерации: dfs, prim, prim_simplified, prim_modified",
-            required = true)
+                names = {"--algorithm", "-a"},
+                description = "Алгоритм генерации: dfs, prim, prim_simplified, prim_modified",
+                required = true)
         String algorithm;
 
         @Option(
-            names = {"--width", "-w"},
-            description = "Ширина лабиринта",
-            required = true)
+                names = {"--width", "-w"},
+                description = "Ширина лабиринта",
+                required = true)
         int width;
 
         @Option(
-            names = {"--height"},
-            description = "Высота лабиринта",
-            required = true)
+                names = {"--height"},
+                description = "Высота лабиринта",
+                required = true)
         int height;
 
         @Option(
-            names = {"--output", "-o"},
-            description = "Файл для сохранения (опционально)")
+                names = {"--output", "-o"},
+                description = "Файл для сохранения (опционально)")
         String output;
 
         @Option(
-            names = {"-u", "--unicode"},
-            description = "Рендер с помощью Unicode псевдографики")
+                names = {"-u", "--unicode"},
+                description = "Рендер с помощью Unicode псевдографики")
         boolean unicode;
 
         @Override
@@ -68,41 +67,41 @@ public class Main implements Runnable {
     static class SolveCommand implements Runnable {
 
         @Option(
-            names = {"--algorithm", "-a"},
-            description = "Алгоритм решения: dijkstra, astar",
-            required = true)
+                names = {"--algorithm", "-a"},
+                description = "Алгоритм решения: dijkstra, astar",
+                required = true)
         String algorithm;
 
         @Option(
-            names = {"--file", "-f"},
-            description = "Файл с лабиринтом")
+                names = {"--file", "-f"},
+                description = "Файл с лабиринтом")
         String file;
 
         @Option(
-            names = {"-t", "--text"},
-            description = "Лабиринтный ASCII-текст (рендеринг) вместо файла")
+                names = {"-t", "--text"},
+                description = "Лабиринтный ASCII-текст (рендеринг) вместо файла")
         String text;
 
         @Option(
-            names = {"--start", "-s"},
-            description = "Начальная точка в формате x,y",
-            required = true)
+                names = {"--start", "-s"},
+                description = "Начальная точка в формате x,y",
+                required = true)
         String start;
 
         @Option(
-            names = {"--end", "-e"},
-            description = "Конечная точка в формате x,y",
-            required = true)
+                names = {"--end", "-e"},
+                description = "Конечная точка в формате x,y",
+                required = true)
         String end;
 
         @Option(
-            names = {"--output", "-o"},
-            description = "Файл для сохранения решения (опционально)")
+                names = {"--output", "-o"},
+                description = "Файл для сохранения решения (опционально)")
         String output;
 
         @Option(
-            names = {"-u", "--unicode"},
-            description = "Рендер с помощью Unicode псевдографики")
+                names = {"-u", "--unicode"},
+                description = "Рендер с помощью Unicode псевдографики")
         boolean unicode;
 
         @Override
