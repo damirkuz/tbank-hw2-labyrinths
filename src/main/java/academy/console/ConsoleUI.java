@@ -75,7 +75,6 @@ public class ConsoleUI {
         Optional<String> mazeMaybe = app.generate(algorithm, width, height, null, unicode);
 
         mazeMaybe.ifPresent(ms -> {
-            System.out.println(ms);
             boolean solutionChoice = askSomething("Желаете решить лабиринт?");
             if (solutionChoice) {
                 solveMaze(ms, unicode);
