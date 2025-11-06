@@ -1,47 +1,48 @@
 package academy.generator;
 
 import academy.maze.dto.CellType;
-import academy.maze.dto.Maze;
-import academy.maze.dto.Point;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
+/**
+ * Модифицированная версия алгоритма Прима для генерации лабиринтов. Использует фронтир узлов-кандидатов (parent →
+ * child): - Стартует со случайной камеры - Ведёт список пар (родитель, кандидат) для потенциального соединения - На
+ * каждом шаге случайно выбирает пару из списка и соединяет камеры - Добавляет новых кандидатов от только что
+ * подключённой камеры
+ */
 public class PrimModifiedGenerator extends BaseGenerator {
 
+    private record Node(int px, int py, int cx, int cy) {}
+
     @Override
-    public Maze generate(int width, int height) {
-        return generatePrimWithChanceTakeNewest(width, height, 0.8);
-    }
+    protected void privateGenerate(CellType[][] out, int innerW, int innerH) {
+        int CW = camW(innerW), CH = camH(innerH);
+        boolean[][] vis = new boolean[CH][CW];
+        List<Node> frontier = new ArrayList<>();
 
-    protected Maze generatePrimWithChanceTakeNewest(int width, int height, double chance) {
-        Maze maze = initializeMaze(width, height);
-
-        Point start = GeneratorUtil.getStartPoint(width, height);
-        GeneratorUtil.markCell(maze, start, CellType.PATH);
-
-        List<Point> frontier = new ArrayList<>();
-        Set<Point> frontierSet = new HashSet<>();
-        addToFrontier(maze, start, frontier, frontierSet);
+        int sx = random.nextInt(CW);
+        int sy = random.nextInt(CH);
+        vis[sy][sx] = true;
+        out[oy(sy)][ox(sx)] = CellType.PATH;
+        addFrontier(sx, sy, CW, CH, vis, frontier);
 
         while (!frontier.isEmpty()) {
-            Point cur;
-            if (GeneratorUtil.random.nextDouble() < chance) {
-                cur = frontier.removeLast();
-            } else {
-                cur = pickRandomAndRemove(frontier);
-            }
+            int idx = random.nextInt(frontier.size());
+            Node n = frontier.remove(idx);
 
-            frontierSet.remove(cur);
-            var mazeNeighbors = getMazeNeighbors(maze, cur);
-            if (!mazeNeighbors.isEmpty()) {
-                var connectTo = GeneratorUtil.getRandomPointFromList(mazeNeighbors);
-                carvePassage(maze, connectTo, cur);
-                addToFrontier(maze, cur, frontier, frontierSet);
+            if (vis[n.cy][n.cx]) continue;
+
+            carvePassage(out, n.px, n.py, n.cx, n.cy, vis);
+            addFrontier(n.cx, n.cy, CW, CH, vis, frontier);
+        }
+    }
+
+    private void addFrontier(int cx, int cy, int CW, int CH, boolean[][] vis, List<Node> frontier) {
+        for (int[] d : DIRS) {
+            int nx = cx + d[0], ny = cy + d[1];
+            if (inCamBounds(nx, ny, CW, CH) && !vis[ny][nx]) {
+                frontier.add(new Node(cx, cy, nx, ny));
             }
         }
-
-        return maze;
     }
 }

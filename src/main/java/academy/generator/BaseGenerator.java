@@ -2,61 +2,84 @@ package academy.generator;
 
 import academy.maze.dto.CellType;
 import academy.maze.dto.Maze;
-import academy.maze.dto.Point;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
+import java.util.Random;
 
 public abstract class BaseGenerator implements Generator {
 
-    protected Maze initializeMaze(int width, int height) {
-        validateDimensions(width, height);
-        Maze maze = GeneratorUtil.getGrid(width, height);
-        GeneratorUtil.fill(maze, CellType.WALL);
-        return maze;
-    }
+    protected final Random random = new Random();
+    static final int[][] DIRS = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
 
-    protected void validateDimensions(int width, int height) {
-        if (width <= 0 || height <= 0) {
-            throw new IllegalArgumentException("Длина и ширина должны быть положительными");
-        }
-    }
-
-    protected List<Point> getMazeNeighbors(Maze maze, Point cell) {
-        List<Point> neighbors = GeneratorUtil.getPointNeighbours(cell);
-        List<Point> mazeNeighbors = new ArrayList<>();
-        for (Point n : neighbors) {
-            if (GeneratorUtil.pointInMaze(n, maze) && GeneratorUtil.getPointType(n, maze) == CellType.PATH) {
-                mazeNeighbors.add(n);
+    @Override
+    public Maze generate(int width, int height) {
+        // Создаём сетку лабиринта
+        CellType[][] out = new CellType[height + 2][width + 2];
+        // Заполняем стенами
+        for (int y = 0; y < height + 2; y++) {
+            for (int x = 0; x < width + 2; x++) {
+                out[y][x] = CellType.WALL;
             }
         }
-        return mazeNeighbors;
+
+        // запускаем алгоритм генерации из наследника
+        privateGenerate(out, width, height);
+        return new Maze(out);
     }
 
-    protected List<Point> getUnvisitedNeighbors(Maze maze, Point cell) {
-        return GeneratorUtil.getUnvisitedNeighbours(maze, cell);
+    protected abstract void privateGenerate(CellType[][] out, int innerWidth, int innerHeight);
+
+    // Координатные преобразования
+    protected int ox(int cx) {
+        return 1 + 2 * cx;
     }
 
-    protected void addToFrontier(Maze maze, Point cell, List<Point> frontier, Set<Point> frontierSet) {
-        for (Point n : getUnvisitedNeighbors(maze, cell)) {
-            if (!frontierSet.contains(n)) {
-                frontier.add(n);
-                frontierSet.add(n);
-            }
+    protected int oy(int cy) {
+        return 1 + 2 * cy;
+    }
+
+    protected int camW(int innerWidth) {
+        return (innerWidth + 1) / 2;
+    }
+
+    protected int camH(int innerHeight) {
+        return (innerHeight + 1) / 2;
+    }
+
+    protected boolean inCamBounds(int cx, int cy, int CW, int CH) {
+        return cx >= 0 && cx < CW && cy >= 0 && cy < CH;
+    }
+
+    /** Пробивает перегородку между двумя соседними камерами. */
+    protected void carvePassage(CellType[][] out, int cx, int cy, int nx, int ny, boolean[][] vis) {
+        int dx = Integer.signum(nx - cx);
+        int dy = Integer.signum(ny - cy);
+
+        out[oy(cy)][ox(cx)] = CellType.PATH; // исходная камера
+        out[oy(cy) + dy][ox(cx) + dx] = CellType.PATH; // перегородка
+        out[oy(ny)][ox(nx)] = CellType.PATH; // целевая камера
+        vis[ny][nx] = true;
+    }
+
+    /** Перемешивает массив направлений. */
+    protected void shuffleDirections(int[][] dirs) {
+        for (int i = dirs.length - 1; i > 0; i--) {
+            int j = random.nextInt(i + 1);
+            int[] t = dirs[i];
+            dirs[i] = dirs[j];
+            dirs[j] = t;
         }
     }
 
-    protected <T> T pickRandom(List<T> list) {
-        int idx = GeneratorUtil.random.nextInt(list.size());
-        return list.get(idx);
-    }
-
-    protected <T> T pickRandomAndRemove(List<T> list) {
-        int idx = GeneratorUtil.random.nextInt(list.size());
-        return list.remove(idx);
-    }
-
-    protected void carvePassage(Maze maze, Point from, Point to) {
-        GeneratorUtil.markBetweenInclusivePoints(from, to, CellType.PATH, maze);
+    /** Получает всех непосещённых соседей камеры. */
+    protected List<int[]> getUnvisitedNeighbors(int cx, int cy, int CW, int CH, boolean[][] vis) {
+        List<int[]> neighbors = new ArrayList<>();
+        for (int[] d : DIRS) {
+            int nx = cx + d[0], ny = cy + d[1];
+            if (inCamBounds(nx, ny, CW, CH) && !vis[ny][nx]) {
+                neighbors.add(new int[] {nx, ny, d[0], d[1]});
+            }
+        }
+        return neighbors;
     }
 }

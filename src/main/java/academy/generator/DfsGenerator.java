@@ -1,34 +1,42 @@
 package academy.generator;
 
-import academy.maze.dto.Maze;
-import academy.maze.dto.Point;
-import java.util.ArrayDeque;
-import java.util.Deque;
-import java.util.List;
+import academy.maze.dto.CellType;
 
+/**
+ * Генератор лабиринтов на основе алгоритма поиска в глубину (DFS). Использует рекурсивный обход: - Начинает с камеры
+ * (0,0) и случайно выбирает направление движения - Рекурсивно углубляется в непосещённые соседние камеры - При тупике
+ * возвращается назад и пробует другие направления
+ */
 public class DfsGenerator extends BaseGenerator {
 
     @Override
-    public Maze generate(int width, int height) {
-        Maze maze = initializeMaze(width, height);
-        Point start = GeneratorUtil.getStartPoint(width, height);
+    protected void privateGenerate(CellType[][] out, int innerWidth, int innerHeight) {
+        int CW = camW(innerWidth);
+        int CH = camH(innerHeight);
+        // создаём сетку "камер"
+        boolean[][] visited = new boolean[CH][CW];
 
-        Deque<Point> stack = new ArrayDeque<>();
-        GeneratorUtil.markCell(maze, start, academy.maze.dto.CellType.PATH);
-        stack.push(start);
+        // Запускаем DFS от (0,0) в логическом пространстве
+        dfsCarve(out, 0, 0, visited, CW, CH);
+    }
 
-        while (!stack.isEmpty()) {
-            Point cur = stack.peek();
-            List<Point> unvisited = getUnvisitedNeighbors(maze, cur);
-            if (unvisited.isEmpty()) {
-                stack.pop();
-            } else {
-                Point next = pickRandom(unvisited);
-                carvePassage(maze, cur, next);
-                stack.push(next);
-            }
+    private void dfsCarve(CellType[][] out, int cx, int cy, boolean[][] visited, int CW, int CH) {
+        // помечаем текущую клетку как посещённую
+        visited[cy][cx] = true;
+        out[oy(cy)][ox(cx)] = CellType.PATH;
+
+        int[][] dirs = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
+        shuffleDirections(dirs);
+
+        for (int[] d : dirs) {
+            // берём случайную соседнюю камеру
+            int ncx = cx + d[0], ncy = cy + d[1];
+            if (!inCamBounds(ncx, ncy, CW, CH) || visited[ncy][ncx]) continue;
+
+            // пробиваем проход между текущей камерой и случайной
+            carvePassage(out, cx, cy, ncx, ncy, visited);
+            // рекурсивно повторяем
+            dfsCarve(out, ncx, ncy, visited, CW, CH);
         }
-
-        return maze;
     }
 }

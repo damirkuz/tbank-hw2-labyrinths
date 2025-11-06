@@ -1,94 +1,49 @@
 package academy.generator;
 
 import academy.maze.dto.CellType;
-import academy.maze.dto.Maze;
-import academy.maze.dto.Point;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
-import java.util.Set;
 
+/**
+ * Классическая реализация алгоритма Прима для генерации лабиринтов. Использует фронтир рёбер (edge frontier): -
+ * Стартует с камеры (0,0) - Ведёт список всех рёбер между посещёнными и непосещёнными камерами - На каждом шаге
+ * случайно выбирает ребро из фронтира - Соединяет камеры через выбранное ребро и обновляет фронтир
+ */
 public class PrimTrueGenerator extends BaseGenerator {
 
+    private record Edge(int cx, int cy, int nx, int ny) {}
+
     @Override
-    public Maze generate(int width, int height) {
-        Maze maze = initializeMaze(width, height);
+    protected void privateGenerate(CellType[][] out, int innerW, int innerH) {
+        int CW = camW(innerW), CH = camH(innerH);
+        boolean[][] vis = new boolean[CH][CW];
+        List<Edge> frontier = new ArrayList<>();
 
-        Point start = GeneratorUtil.getStartPoint(width, height);
-        GeneratorUtil.markCell(maze, start, CellType.PATH);
+        int sx = 0;
+        int sy = 0;
+        vis[sy][sx] = true;
+        out[oy(sy)][ox(sx)] = CellType.PATH;
 
-        List<Wall> walls = new ArrayList<>();
-        Set<Wall> wallSet = new HashSet<>();
-        addAdjacentWalls(start, walls, wallSet, maze);
+        // добавить рёбра из старта
+        addEdges(sx, sy, CW, CH, vis, frontier);
 
-        while (!walls.isEmpty()) {
-            Wall wall = pickRandomAndRemove(walls);
-            wallSet.remove(wall);
+        while (!frontier.isEmpty()) {
+            int idx = random.nextInt(frontier.size());
+            Edge e = frontier.remove(idx);
+            if (vis[e.ny][e.nx]) continue;
 
-            if (wall.separatesVisitedAndUnvisited(maze)) {
-                Point visited = wall.getVisitedCell(maze);
-                Point unvisited = wall.getUnvisitedCell(maze);
-                carvePassage(maze, visited, unvisited);
-                addAdjacentWalls(unvisited, walls, wallSet, maze);
-            }
-        }
-
-        return maze;
-    }
-
-    private void addAdjacentWalls(Point cell, List<Wall> walls, Set<Wall> wallSet, Maze maze) {
-        for (Point nb : GeneratorUtil.getPointNeighbours(cell)) {
-            if (GeneratorUtil.pointInMaze(nb, maze)) {
-                Wall w = new Wall(cell, nb);
-                if (wallSet.add(w)) {
-                    walls.add(w);
-                }
-            }
+            carvePassage(out, e.cx, e.cy, e.nx, e.ny, vis);
+            // добавляем рёбра дальше
+            addEdges(e.nx, e.ny, CW, CH, vis, frontier);
         }
     }
 
-    private static class Wall {
-        private final Point a;
-        private final Point b;
-
-        Wall(Point c1, Point c2) {
-            if (c1.x() < c2.x() || (c1.x() == c2.x() && c1.y() < c2.y())) {
-                this.a = c1;
-                this.b = c2;
-            } else {
-                this.a = c2;
-                this.b = c1;
+    private void addEdges(int cx, int cy, int CW, int CH, boolean[][] vis, List<Edge> frontier) {
+        for (int[] d : DIRS) {
+            int nx = cx + d[0], ny = cy + d[1];
+            if (inCamBounds(nx, ny, CW, CH) && !vis[ny][nx]) {
+                frontier.add(new Edge(cx, cy, nx, ny));
             }
-        }
-
-        boolean separatesVisitedAndUnvisited(Maze maze) {
-            if (!GeneratorUtil.pointInMaze(a, maze) || !GeneratorUtil.pointInMaze(b, maze)) {
-                return false;
-            }
-            CellType t1 = GeneratorUtil.getPointType(a, maze);
-            CellType t2 = GeneratorUtil.getPointType(b, maze);
-            return (t1 == CellType.PATH && t2 == CellType.WALL) || (t1 == CellType.WALL && t2 == CellType.PATH);
-        }
-
-        Point getVisitedCell(Maze maze) {
-            return (GeneratorUtil.getPointType(a, maze) == CellType.PATH) ? a : b;
-        }
-
-        Point getUnvisitedCell(Maze maze) {
-            return (GeneratorUtil.getPointType(a, maze) == CellType.WALL) ? a : b;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (!(o instanceof Wall wall)) return false;
-            return a.equals(wall.a) && b.equals(wall.b);
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(a, b);
         }
     }
 }
