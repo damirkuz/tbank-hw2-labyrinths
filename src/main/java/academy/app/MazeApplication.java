@@ -13,7 +13,6 @@ import academy.solver.*;
 import academy.validation.InputValidator;
 import java.io.IOException;
 import java.util.Optional;
-import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,17 +41,14 @@ public class MazeApplication {
             if (outputFile != null && !outputFile.isEmpty()) {
                 try {
                     writer.write(maze, outputFile);
-                    //                    log.info("Лабиринт сохранён в файл: {}", outputFile);
                     return Optional.empty();
                 } catch (IOException ioe) {
                     log.error("Не удалось сохранить в файл '{}': {}", outputFile, ioe.getMessage());
                     String out = (unicode ? unicodeRenderer : asciiRenderer).render(maze);
-                    log.info("Лабиринт:\n{}", out);
                     return Optional.of(out);
                 }
             } else {
                 String out = (unicode ? unicodeRenderer : asciiRenderer).render(maze);
-                log.info("Лабиринт:\n{}", out);
                 return Optional.of(out);
             }
         } catch (Exception e) {
@@ -108,14 +104,12 @@ public class MazeApplication {
             if (outputFile != null && !outputFile.isEmpty()) {
                 try {
                     writer.write(maze, outputFile);
-                    return Optional.empty();
+                    return Optional.of(out);
                 } catch (IOException ioe) {
                     log.error("Не удалось записать решение в файл '{}': {}", outputFile, ioe.getMessage());
-                    log.info("Лабиринт:\n{}", out);
                     return Optional.of(out);
                 }
             } else {
-                log.info("Лабиринт\n{}", out);
                 return Optional.of(out);
             }
         } catch (Exception e) {
@@ -170,7 +164,6 @@ public class MazeApplication {
         return getCellType(ch);
     }
 
-    @NotNull
     public static CellType getCellType(char ch) {
         return switch (ch) {
             case ' ' -> CellType.PATH;

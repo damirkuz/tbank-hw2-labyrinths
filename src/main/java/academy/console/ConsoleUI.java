@@ -23,6 +23,7 @@ public class ConsoleUI {
                 case "2" -> showHelp();
                 case "0" -> {
                     System.out.println("\nДо свидания!");
+                    close();
                     return;
                 }
                 default -> System.out.println("Неверный выбор. Попробуйте снова.");
@@ -41,8 +42,6 @@ public class ConsoleUI {
     }
 
     private void generateMaze() {
-        System.out.println("\n=== Генерация лабиринта ===\n");
-
         // Выбор алгоритма
         System.out.println("Доступные алгоритмы генерации:");
         System.out.println("  1. DFS (Depth-First Search)");
@@ -75,6 +74,7 @@ public class ConsoleUI {
         Optional<String> mazeMaybe = app.generate(algorithm, width, height, null, unicode);
 
         mazeMaybe.ifPresent(ms -> {
+            System.out.println(mazeMaybe.orElse("Лабиринта нет"));
             boolean solutionChoice = askSomething("Желаете решить лабиринт?");
             if (solutionChoice) {
                 solveMaze(ms, unicode);
@@ -89,8 +89,6 @@ public class ConsoleUI {
     }
 
     private void solveMaze(String mazeText, boolean unicode) {
-        System.out.println("\n=== Решение лабиринта ===\n");
-
         // Выбор алгоритма
         System.out.println("\nДоступные алгоритмы решения:");
         System.out.println("  1. Dijkstra");
@@ -125,6 +123,8 @@ public class ConsoleUI {
             }
         }
 
+        System.out.println();
+
         app.solveFromString(algorithm, mazeText, startStr, endStr, outputFile, unicode)
                 .ifPresentOrElse(System.out::println, () -> System.out.println("Решения нет"));
     }
@@ -142,6 +142,7 @@ public class ConsoleUI {
         System.out.println("  - Введите путь к файлу с лабиринтом");
         System.out.println("  - Алгоритм: Dijkstra или A*");
         System.out.println("  - Точки: формат x,y");
+        System.out.println("  - Начало координат в левом верхнем углу, при движении вниз растёт y, вправо - x");
         System.out.println("  - Решение можно сохранить в файл или показать на экране");
         System.out.println();
         System.out.println("ОБОЗНАЧЕНИЯ:");
