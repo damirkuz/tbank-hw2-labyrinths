@@ -13,27 +13,24 @@ public class AStarSolver extends BaseSolver {
 
         if (validateEndpoints(maze, start, end)) return null;
 
-        Map<Point, Integer> gScore = new HashMap<>(); // g: от старта
-        Map<Point, Integer> fScore = new HashMap<>(); // f: g + h
-        Map<Point, Point> previous = new HashMap<>(); // для пути
-        Set<Point> openSet = new HashSet<>(); // кандидаты
-        Set<Point> closedSet = new HashSet<>(); // обработаны
+        Map<Point, Integer> gScore = new HashMap<>();
+        Map<Point, Integer> fScore = new HashMap<>();
+        Map<Point, Point> previous = new HashMap<>();
+        Set<Point> closedSet = new HashSet<>();
+
+        // Очередь с приоритетом сортируем по fScore
+        PriorityQueue<Point> openQueue = new PriorityQueue<>((a, b) -> {
+            int fa = fScore.getOrDefault(a, Integer.MAX_VALUE);
+            int fb = fScore.getOrDefault(b, Integer.MAX_VALUE);
+            return Integer.compare(fa, fb);
+        });
 
         gScore.put(start, 0);
         fScore.put(start, heuristic(start, end));
-        openSet.add(start);
+        openQueue.add(start);
 
-        while (!openSet.isEmpty()) {
-            // Берём точку с минимальным fScore
-            Point current = null;
-            int bestF = Integer.MAX_VALUE;
-            for (Point p : openSet) {
-                int f = fScore.getOrDefault(p, Integer.MAX_VALUE);
-                if (f < bestF) {
-                    bestF = f;
-                    current = p;
-                }
-            }
+        while (!openQueue.isEmpty()) {
+            Point current = openQueue.poll();
 
             // Финиш найден — восстанавливаем путь
             if (current.equals(end)) {
@@ -41,10 +38,9 @@ public class AStarSolver extends BaseSolver {
             }
 
             // Переносим current в closed
-            openSet.remove(current);
             closedSet.add(current);
 
-            for (Point nb : neighbors4(current, maze)) {
+            for (Point nb : neighbors(current, maze)) {
                 if (cell(maze, nb) == CellType.WALL || closedSet.contains(nb)) continue;
 
                 int curG = gScore.getOrDefault(current, Integer.MAX_VALUE);
@@ -55,7 +51,9 @@ public class AStarSolver extends BaseSolver {
                     previous.put(nb, current);
                     gScore.put(nb, tentativeG);
                     fScore.put(nb, tentativeG + heuristic(nb, end));
-                    openSet.add(nb);
+                    if (!openQueue.contains(nb)) {
+                        openQueue.add(nb);
+                    }
                 }
             }
         }
