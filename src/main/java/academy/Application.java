@@ -95,7 +95,7 @@ public class Application implements Runnable {
         @Option(
                 names = {"--algorithm", "-a"},
                 required = true,
-                description = "Алгоритм решения: dijkstra, astar")
+                description = "Алгоритм решения: dijkstra, astar, bfs")
         String algorithm;
 
         @Option(
