@@ -95,13 +95,15 @@ public class ConsoleUI {
             \nДоступные алгоритмы решения:
               1. Dijkstra
               2. A* (A-Star)
-            Выберите алгоритм (1-2):""");
+              3. BFS
+            Выберите алгоритм (1-3):""");
 
         String algoChoice = scanner.nextLine().trim();
         String algorithm =
                 switch (algoChoice) {
                     case "1" -> "dijkstra";
                     case "2" -> "astar";
+                    case "3" -> "bfs";
                     default -> {
                         System.out.println("Неверный выбор. Используется Dijkstra.");
                         yield "dijkstra";

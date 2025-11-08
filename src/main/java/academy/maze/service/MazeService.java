@@ -14,6 +14,7 @@ import academy.maze.renderer.ConsoleMazeRenderer;
 import academy.maze.renderer.MazeRenderer;
 import academy.maze.renderer.UnicodeMazeRenderer;
 import academy.maze.solver.AStarSolver;
+import academy.maze.solver.BFSSolver;
 import academy.maze.solver.DijkstraSolver;
 import academy.maze.solver.Solver;
 import academy.maze.validation.InputValidator;
@@ -213,6 +214,7 @@ public class MazeService {
         return switch (algorithm.toLowerCase()) {
             case "dijkstra" -> new DijkstraSolver();
             case "astar", "a*" -> new AStarSolver();
+            case "bfs" -> new BFSSolver();
             default -> null;
         };
     }
