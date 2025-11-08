@@ -1,6 +1,7 @@
 package academy.generator;
 
 import academy.maze.dto.CellType;
+import academy.maze.dto.Direction;
 import academy.maze.dto.Maze;
 import java.util.ArrayList;
 import java.util.List;
@@ -9,7 +10,6 @@ import java.util.Random;
 public abstract class BaseGenerator implements Generator {
 
     protected final Random random = new Random();
-    static final int[][] DIRS = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
 
     @Override
     public Maze generate(int width, int height) {
@@ -61,23 +61,24 @@ public abstract class BaseGenerator implements Generator {
         vis[ny][nx] = true;
     }
 
-    /** Перемешивает массив направлений. */
-    protected void shuffleDirections(int[][] dirs) {
+    protected Direction[] getRandomDirections() {
+        Direction[] dirs = Direction.values();
         for (int i = dirs.length - 1; i > 0; i--) {
-            int j = random.nextInt(i + 1);
-            int[] t = dirs[i];
-            dirs[i] = dirs[j];
-            dirs[j] = t;
+            int index = random.nextInt(i + 1);
+            Direction temp = dirs[i];
+            dirs[i] = dirs[index];
+            dirs[index] = temp;
         }
+        return dirs;
     }
 
     /** Получает всех непосещённых соседей камеры. */
     protected List<int[]> getUnvisitedNeighbors(int cx, int cy, int CW, int CH, boolean[][] vis) {
         List<int[]> neighbors = new ArrayList<>();
-        for (int[] d : DIRS) {
-            int nx = cx + d[0], ny = cy + d[1];
+        for (Direction d : Direction.values()) {
+            int nx = cx + d.getX(), ny = cy + d.getY();
             if (inCamBounds(nx, ny, CW, CH) && !vis[ny][nx]) {
-                neighbors.add(new int[] {nx, ny, d[0], d[1]});
+                neighbors.add(new int[] {nx, ny, d.getX(), d.getY()});
             }
         }
         return neighbors;

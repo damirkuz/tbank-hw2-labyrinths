@@ -1,6 +1,7 @@
 package academy.generator;
 
 import academy.maze.dto.CellType;
+import academy.maze.dto.Direction;
 
 /**
  * Генератор лабиринтов на основе алгоритма поиска в глубину (DFS). Использует рекурсивный обход: - Начинает с камеры
@@ -25,12 +26,10 @@ public class DfsGenerator extends BaseGenerator {
         visited[cy][cx] = true;
         out[oy(cy)][ox(cx)] = CellType.PATH;
 
-        int[][] dirs = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
-        shuffleDirections(dirs);
 
-        for (int[] d : dirs) {
+        for (Direction d : getRandomDirections()) {
             // берём случайную соседнюю камеру
-            int ncx = cx + d[0], ncy = cy + d[1];
+            int ncx = cx + d.getX(), ncy = cy + d.getY();
             if (!inCamBounds(ncx, ncy, CW, CH) || visited[ncy][ncx]) continue;
 
             // пробиваем проход между текущей камерой и случайной

@@ -1,6 +1,7 @@
 package academy.solver;
 
 import academy.maze.dto.CellType;
+import academy.maze.dto.Direction;
 import academy.maze.dto.Maze;
 import academy.maze.dto.Path;
 import academy.maze.dto.Point;
@@ -35,11 +36,10 @@ public abstract class BaseSolver implements Solver {
         return Math.abs(a.x() - b.x()) + Math.abs(a.y() - b.y());
     }
 
-    protected List<Point> neighbors4(Point p, Maze maze) {
+    protected List<Point> neighbors(Point p, Maze maze) {
         List<Point> res = new ArrayList<>(4);
-        int[][] d = {{0, -1}, {0, 1}, {-1, 0}, {1, 0}};
-        for (int[] v : d) {
-            Point q = new Point(p.x() + v[0], p.y() + v[1]);
+        for (Direction d : Direction.values()) {
+            Point q = new Point(p.x() + d.getX(), p.y() + d.getY());
             if (isInside(maze, q)) res.add(q);
         }
         return res;

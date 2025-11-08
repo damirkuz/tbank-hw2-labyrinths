@@ -41,7 +41,7 @@ public class DijkstraSolver extends BaseSolver {
 
             if (cur.equals(end)) break;
 
-            for (Point nb : neighbors4(cur, maze)) {
+            for (Point nb : neighbors(cur, maze)) {
                 if (visited.contains(nb) || cell(maze, nb) == CellType.WALL) continue;
 
                 int nd = dist.get(cur) + 1; // вес ребра = 1

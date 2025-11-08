@@ -1,6 +1,7 @@
 package academy.generator;
 
 import academy.maze.dto.CellType;
+import academy.maze.dto.Direction;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,8 +39,8 @@ public class PrimModifiedGenerator extends BaseGenerator {
     }
 
     private void addFrontier(int cx, int cy, int CW, int CH, boolean[][] vis, List<Node> frontier) {
-        for (int[] d : DIRS) {
-            int nx = cx + d[0], ny = cy + d[1];
+        for (Direction d : Direction.values()) {
+            int nx = cx + d.getX(), ny = cy + d.getY();
             if (inCamBounds(nx, ny, CW, CH) && !vis[ny][nx]) {
                 frontier.add(new Node(cx, cy, nx, ny));
             }
