@@ -1,9 +1,9 @@
 package academy;
 
-import academy.app.MazeApplication;
-import academy.console.ConsoleUI;
-import academy.exception.handler.CommandLineExceptionHandler;
-import academy.validation.InputValidator;
+import academy.maze.console.ConsoleUI;
+import academy.maze.exception.handler.CommandLineExceptionHandler;
+import academy.maze.service.MazeService;
+import academy.maze.validation.InputValidator;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
@@ -22,6 +22,14 @@ public class Application implements Runnable {
     private boolean help;
 
     public static void main(String[] args) {
+
+        if (args.length == 0) {
+            // Запускаем консольный интерфейс, если аргументов нет
+            ConsoleUI consoleUI = new ConsoleUI();
+            consoleUI.start();
+            return;
+        }
+
         CommandLine cmd = new CommandLine(new Application());
         cmd.setParameterExceptionHandler(new CommandLineExceptionHandler());
         int exitCode = cmd.execute(args);
@@ -41,8 +49,6 @@ public class Application implements Runnable {
                   generate  Generate a maze with specified algorithm and dimensions.
                   solve     Solve a maze with specified algorithm and points.""");
         }
-        ConsoleUI consoleUI = new ConsoleUI();
-        consoleUI.start();
     }
 
     @Command(name = "generate", description = "Generate a maze with specified algorithm and dimensions.")
@@ -78,7 +84,7 @@ public class Application implements Runnable {
 
         @Override
         public void run() {
-            MazeApplication app = new MazeApplication();
+            MazeService app = new MazeService();
             app.generate(algorithm, width, height, output, unicode);
         }
     }
@@ -134,7 +140,7 @@ public class Application implements Runnable {
                 return;
             }
 
-            MazeApplication app = new MazeApplication();
+            MazeService app = new MazeService();
             if (text != null && !text.isBlank()) {
                 app.solveFromString(algorithm, text, start, end, output, unicode);
             } else {
