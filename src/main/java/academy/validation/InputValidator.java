@@ -5,7 +5,7 @@ import academy.maze.dto.Point;
 public class InputValidator {
 
     /** Парсит строку вида "x,y" и возвращает Point. */
-    public static Point parsePoint(String input) {
+    public static Point parsePoint(String input) throws IllegalArgumentException {
         if (input == null || input.trim().isEmpty()) {
             throw new IllegalArgumentException("Координаты не могут быть пустыми");
         }

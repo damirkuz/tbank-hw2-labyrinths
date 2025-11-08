@@ -34,21 +34,24 @@ public class ConsoleUI {
     }
 
     private void printMainMenu() {
-        System.out.println("Главное меню:");
-        System.out.println("  1. Сгенерировать лабиринт");
-        System.out.println("  2. Справка");
-        System.out.println("  0. Выход");
-        System.out.print("Ваш выбор: ");
+        System.out.print(
+                """
+            Главное меню:
+              1. Сгенерировать лабиринт
+              2. Справка
+              0. Выход
+            Ваш выбор:""");
     }
 
     private void generateMaze() {
-        // Выбор алгоритма
-        System.out.println("Доступные алгоритмы генерации:");
-        System.out.println("  1. DFS (Depth-First Search)");
-        System.out.println("  2. Prim True");
-        System.out.println("  3. Prim Simplified");
-        System.out.println("  4. Prim Modified");
-        System.out.print("Выберите алгоритм (1-4): ");
+        System.out.print(
+                """
+            Доступные алгоритмы генерации:
+              1. DFS (Depth-First Search)
+              2. Prim True
+              3. Prim Simplified
+              4. Prim Modified
+            Выберите алгоритм (1-4):""");
 
         String algoChoice = scanner.nextLine().trim();
         String algorithm =
@@ -63,13 +66,11 @@ public class ConsoleUI {
                     }
                 };
 
-        // Ввод размеров
         int width = readPositiveInt("Введите ширину лабиринта: ");
         int height = readPositiveInt("Введите высоту лабиринта: ");
 
         boolean unicode = askSomething("Включить псевдографику Unicode?");
 
-        // Генерация
         System.out.println();
         Optional<String> mazeMaybe = app.generate(algorithm, width, height, null, unicode);
 
@@ -89,11 +90,12 @@ public class ConsoleUI {
     }
 
     private void solveMaze(String mazeText, boolean unicode) {
-        // Выбор алгоритма
-        System.out.println("\nДоступные алгоритмы решения:");
-        System.out.println("  1. Dijkstra");
-        System.out.println("  2. A* (A-Star)");
-        System.out.print("Выберите алгоритм (1-2): ");
+        System.out.print(
+                """
+            \nДоступные алгоритмы решения:
+              1. Dijkstra
+              2. A* (A-Star)
+            Выберите алгоритм (1-2):""");
 
         String algoChoice = scanner.nextLine().trim();
         String algorithm =
@@ -106,7 +108,6 @@ public class ConsoleUI {
                     }
                 };
 
-        // Координаты
         System.out.print("Введите начальную точку (формат: x,y): ");
         String startStr = scanner.nextLine().trim();
 
@@ -130,28 +131,32 @@ public class ConsoleUI {
     }
 
     private void showHelp() {
-        System.out.println("\nСправка");
-        System.out.println("Приложение позволяет генерировать и решать лабиринты.");
-        System.out.println();
-        System.out.println("ГЕНЕРАЦИЯ:");
-        System.out.println("  - Алгоритм: DFS или варианты Prim");
-        System.out.println("  - Размеры: ширина и высота (положительные целые)");
-        System.out.println("  - Результат можно сохранить в файл или показать на экране");
-        System.out.println();
-        System.out.println("РЕШЕНИЕ:");
-        System.out.println("  - Введите путь к файлу с лабиринтом");
-        System.out.println("  - Алгоритм: Dijkstra или A*");
-        System.out.println("  - Точки: формат x,y");
-        System.out.println("  - Начало координат в левом верхнем углу, при движении вниз растёт y, вправо - x");
-        System.out.println("  - Решение можно сохранить в файл или показать на экране");
-        System.out.println();
-        System.out.println("ОБОЗНАЧЕНИЯ:");
-        System.out.println("  # — стена");
-        System.out.println("  (пробел) — проход");
-        System.out.println("  O — начальная точка");
-        System.out.println("  X — конечная точка");
-        System.out.println("  . — найденный путь");
-        System.out.println();
+        System.out.print(
+                """
+
+            Справка
+            Приложение позволяет генерировать и решать лабиринты.
+
+            ГЕНЕРАЦИЯ:
+              - Алгоритм: DFS или варианты Prim
+              - Размеры: ширина и высота (положительные целые)
+              - Результат можно сохранить в файл или показать на экране
+
+            РЕШЕНИЕ:
+              - Введите путь к файлу с лабиринтом
+              - Алгоритм: Dijkstra или A*
+              - Точки: формат x,y
+              - Начало координат в левом верхнем углу, при движении вниз растёт y, вправо - x
+              - Решение можно сохранить в файл или показать на экране
+
+            ОБОЗНАЧЕНИЯ:
+              # — стена
+              (пробел) — проход
+              O — начальная точка
+              X — конечная точка
+              . — найденный путь
+
+            """);
     }
 
     private int readPositiveInt(String prompt) {

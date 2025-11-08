@@ -16,10 +16,6 @@ import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * Главное приложение для работы с лабиринтами. Поддерживает: - generate: генерация лабиринта - solveFromFile: решение
- * из файла - solveFromString: решение из ASCII-строки (render)
- */
 public class MazeApplication {
 
     private static final Logger log = LoggerFactory.getLogger(MazeApplication.class);
@@ -72,8 +68,9 @@ public class MazeApplication {
         return solveInternal(algorithm, null, mazeText, startStr, endStr, outputFile, unicode);
     }
 
-    public Optional<String> solveFromString(String a, String t, String s, String e, String o) {
-        return solveInternal(a, null, t, s, e, o, false);
+    public Optional<String> solveFromString(
+            String algorithm, String mazeText, String startStr, String endStr, String outputFile) {
+        return solveInternal(algorithm, null, mazeText, startStr, endStr, outputFile, false);
     }
 
     // внутри solveInternal в местах рендера используем выбранный рендерер
@@ -112,10 +109,12 @@ public class MazeApplication {
             } else {
                 return Optional.of(out);
             }
+        } catch (IllegalArgumentException e) {
+            log.error("Не удалось спарсить точки");
         } catch (Exception e) {
             log.error("Ошибка решения", e);
-            return Optional.empty();
         }
+        return Optional.empty();
     }
 
     private boolean validateBounds(Maze maze, Point start, Point end) {
@@ -154,22 +153,30 @@ public class MazeApplication {
             }
             for (int x = 0; x < width; x++) {
                 char ch = line.charAt(x);
-                cells[y][x] = charToCell(ch);
+                cells[y][x] = getCellType(ch);
             }
         }
         return new Maze(cells);
     }
 
-    private CellType charToCell(char ch) {
-        return getCellType(ch);
-    }
-
     public static CellType getCellType(char ch) {
         return switch (ch) {
+            // ASCII режим
             case ' ' -> CellType.PATH;
             case 'O' -> CellType.START;
             case 'X' -> CellType.END;
             case '.' -> CellType.ROUTE;
+            case '#' -> CellType.WALL;
+
+            // Unicode режим
+            case '◉' -> CellType.START; // старт
+            case '★' -> CellType.END; // финиш
+            case '•' -> CellType.ROUTE; // найденный путь
+            case '■' -> CellType.WALL; // стена
+
+            // все варианты стен
+            case '┼', '┬', '┴', '├', '┤', '│', '─', '└', '┘', '┌', '┐', '╵', '╷', '╴', '╶' -> CellType.WALL;
+
             default -> CellType.WALL;
         };
     }

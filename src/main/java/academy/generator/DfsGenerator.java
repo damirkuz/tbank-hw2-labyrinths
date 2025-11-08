@@ -26,7 +26,6 @@ public class DfsGenerator extends BaseGenerator {
         visited[cy][cx] = true;
         out[oy(cy)][ox(cx)] = CellType.PATH;
 
-
         for (Direction d : getRandomDirections()) {
             // берём случайную соседнюю камеру
             int ncx = cx + d.getX(), ncy = cy + d.getY();

@@ -12,6 +12,10 @@ import java.util.List;
 public class MazeFileReader {
 
     public Maze read(String filename) throws IOException {
+        if (filename == null || filename.trim().isEmpty()) {
+            throw new IOException("Имя файла не может быть пустым");
+        }
+
         // Читаем все строки из файла
         List<String> lines = Files.readAllLines(Path.of(filename));
 
@@ -21,6 +25,15 @@ public class MazeFileReader {
 
         int height = lines.size();
         int width = lines.getFirst().length();
+
+        if (width == 0) {
+            throw new IOException("Первая строка файла пуста");
+        }
+
+        if (height < 3 || width < 3) {
+            throw new IOException(
+                    "Лабиринт слишком маленький. Минимальный размер: 3x3, получено: " + width + "x" + height);
+        }
 
         CellType[][] cells = new CellType[height][width];
 

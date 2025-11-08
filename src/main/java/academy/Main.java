@@ -1,6 +1,7 @@
 package academy;
 
 import academy.app.MazeApplication;
+import academy.validation.InputValidator;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
@@ -105,12 +106,11 @@ public class Main implements Runnable {
 
         @Override
         public void run() {
-            if (isValidPoint(start)) {
+            try {
+                InputValidator.parsePoint(start);
+                InputValidator.parsePoint(end);
+            } catch (IllegalArgumentException e) {
                 System.out.println("Invalid point format: " + start + ", expected format: x,y");
-                return;
-            }
-            if (isValidPoint(end)) {
-                System.out.println("Invalid point format: " + end + ", expected format: x,y");
                 return;
             }
 
@@ -119,20 +119,6 @@ public class Main implements Runnable {
                 app.solveFromString(algorithm, text, start, end, output, unicode);
             } else {
                 app.solveFromFile(algorithm, file, start, end, output, unicode);
-            }
-        }
-
-        // Допускаем пробелы вокруг запятой и знаки минус; запрещаем всё остальное
-        private static boolean isValidPoint(String p) {
-            if (p == null) return true;
-            String[] parts = p.trim().split("\\s*,\\s*");
-            if (parts.length != 2) return true;
-            try {
-                Integer.parseInt(parts[0]);
-                Integer.parseInt(parts[1]);
-                return false;
-            } catch (NumberFormatException e) {
-                return true;
             }
         }
     }
