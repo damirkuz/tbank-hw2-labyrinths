@@ -2,9 +2,11 @@ package academy.maze.service;
 
 import academy.maze.dto.CellType;
 import academy.maze.dto.Maze;
+import academy.maze.dto.Path;
 import academy.maze.dto.Point;
 import academy.maze.generator.DfsGenerator;
 import academy.maze.generator.Generator;
+import academy.maze.generator.GeneratorAlgorithm;
 import academy.maze.generator.PrimModifiedGenerator;
 import academy.maze.generator.PrimSimplifiedGenerator;
 import academy.maze.generator.PrimTrueGenerator;
@@ -17,6 +19,7 @@ import academy.maze.solver.AStarSolver;
 import academy.maze.solver.BFSSolver;
 import academy.maze.solver.DijkstraSolver;
 import academy.maze.solver.Solver;
+import academy.maze.solver.SolverAlgorithm;
 import academy.maze.validation.InputValidator;
 import java.io.IOException;
 import java.util.Optional;
@@ -188,7 +191,7 @@ public class MazeService {
         };
     }
 
-    private void markPathOnMaze(Maze maze, academy.maze.dto.Path path, Point start, Point end) {
+    private void markPathOnMaze(Maze maze, Path path, Point start, Point end) {
         Point[] points = path.points();
 
         for (Point p : points) {
@@ -200,21 +203,25 @@ public class MazeService {
         maze.cells()[end.y()][end.x()] = CellType.END;
     }
 
+    private static final String dfs_string = GeneratorAlgorithm.DFS.getValue();
+
     private Generator createGenerator(String algorithm) {
-        return switch (algorithm.toLowerCase()) {
-            case "dfs" -> new DfsGenerator();
-            case "prim", "prim_true" -> new PrimTrueGenerator();
-            case "prim_simplified" -> new PrimSimplifiedGenerator();
-            case "prim_modified" -> new PrimModifiedGenerator();
+        GeneratorAlgorithm alg = GeneratorAlgorithm.fromValue(algorithm).orElseThrow();
+        return switch (alg) {
+            case DFS -> new DfsGenerator();
+            case PRIM_TRUE -> new PrimTrueGenerator();
+            case PRIM_SIMPLE -> new PrimSimplifiedGenerator();
+            case PRIM_MODIFY -> new PrimModifiedGenerator();
             default -> null;
         };
     }
 
     private Solver createSolver(String algorithm) {
-        return switch (algorithm.toLowerCase()) {
-            case "dijkstra" -> new DijkstraSolver();
-            case "astar", "a*" -> new AStarSolver();
-            case "bfs" -> new BFSSolver();
+        SolverAlgorithm alg = SolverAlgorithm.fromValue(algorithm).orElseThrow();
+        return switch (alg) {
+            case DIJKSTRA -> new DijkstraSolver();
+            case A_STAR -> new AStarSolver();
+            case BFS -> new BFSSolver();
             default -> null;
         };
     }

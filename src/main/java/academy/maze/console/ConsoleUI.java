@@ -1,6 +1,8 @@
 package academy.maze.console;
 
+import academy.maze.generator.GeneratorAlgorithm;
 import academy.maze.service.MazeService;
+import academy.maze.solver.SolverAlgorithm;
 import java.util.Optional;
 import java.util.Scanner;
 
@@ -44,25 +46,23 @@ public class ConsoleUI {
     }
 
     private void generateMaze() {
-        System.out.print(
-                """
-            Доступные алгоритмы генерации:
-              1. DFS (Depth-First Search)
-              2. Prim True
-              3. Prim Simplified
-              4. Prim Modified
-            Выберите алгоритм (1-4):""");
+        System.out.printf(
+                "Доступные алгоритмы генерации:%n  1. %s%n  2. %s%n  3. %s%n  4. %s%nВыберите алгоритм (1-4): ",
+                GeneratorAlgorithm.DFS.getForConsoleView(),
+                GeneratorAlgorithm.PRIM_TRUE.getForConsoleView(),
+                GeneratorAlgorithm.PRIM_SIMPLE.getForConsoleView(),
+                GeneratorAlgorithm.PRIM_MODIFY.getForConsoleView());
 
         String algoChoice = scanner.nextLine().trim();
         String algorithm =
                 switch (algoChoice) {
-                    case "1" -> "dfs";
-                    case "2" -> "prim";
-                    case "3" -> "prim_simplified";
-                    case "4" -> "prim_modified";
+                    case "1" -> GeneratorAlgorithm.DFS.getValue();
+                    case "2" -> GeneratorAlgorithm.PRIM_TRUE.getValue();
+                    case "3" -> GeneratorAlgorithm.PRIM_SIMPLE.getValue();
+                    case "4" -> GeneratorAlgorithm.PRIM_MODIFY.getValue();
                     default -> {
                         System.out.println("Неверный выбор. Используется DFS.");
-                        yield "dfs";
+                        yield GeneratorAlgorithm.DFS.getValue();
                     }
                 };
 
@@ -90,23 +90,21 @@ public class ConsoleUI {
     }
 
     private void solveMaze(String mazeText, boolean unicode) {
-        System.out.print(
-                """
-            \nДоступные алгоритмы решения:
-              1. Dijkstra
-              2. A* (A-Star)
-              3. BFS
-            Выберите алгоритм (1-3):""");
+        System.out.printf(
+                "Доступные алгоритмы решения:%n  1. %s%n  2. %s%n  3. %s%nВыберите алгоритм (1-3): %n",
+                SolverAlgorithm.DIJKSTRA.getForConsoleView(),
+                SolverAlgorithm.A_STAR.getForConsoleView(),
+                SolverAlgorithm.BFS.getForConsoleView());
 
         String algoChoice = scanner.nextLine().trim();
         String algorithm =
                 switch (algoChoice) {
-                    case "1" -> "dijkstra";
-                    case "2" -> "astar";
-                    case "3" -> "bfs";
+                    case "1" -> SolverAlgorithm.DIJKSTRA.getValue();
+                    case "2" -> SolverAlgorithm.A_STAR.getValue();
+                    case "3" -> SolverAlgorithm.BFS.getValue();
                     default -> {
                         System.out.println("Неверный выбор. Используется Dijkstra.");
-                        yield "dijkstra";
+                        yield SolverAlgorithm.DIJKSTRA.getValue();
                     }
                 };
 
