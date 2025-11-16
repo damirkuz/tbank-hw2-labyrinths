@@ -39,17 +39,13 @@ public class MazeService {
         try {
             InputValidator.validateDimensions(width, height);
             Generator gen = createGenerator(algorithm);
-            if (gen == null) {
-                log.error("Ошибка: неизвестный алгоритм генерации '{}'", algorithm);
-                return Optional.empty();
-            }
             Maze maze = gen.generate(width, height);
             if (outputFile != null && !outputFile.isEmpty()) {
                 try {
                     writer.write(maze, outputFile);
                     return Optional.empty();
                 } catch (IOException ioe) {
-                    log.error("Не удалось сохранить в файл '{}': {}", outputFile, ioe.getMessage());
+                    log.error("Не удалось сохранить в файл '{}'", outputFile, ioe);
                     String out = (unicode ? unicodeRenderer : asciiRenderer).render(maze);
                     return Optional.of(out);
                 }
@@ -92,39 +88,58 @@ public class MazeService {
             String endStr,
             String outputFile,
             boolean unicode) {
+
         try {
             Point start = InputValidator.parsePoint(startStr);
             Point end = InputValidator.parsePoint(endStr);
-            Maze maze = (mazeText != null) ? loadMazeFromString(mazeText) : reader.read(inputFile);
 
-            if (!validateBounds(maze, start, end)) return Optional.empty();
+            Maze maze = loadMaze(mazeText, inputFile);
+            if (!validateBounds(maze, start, end)) {
+                return Optional.empty();
+            }
 
             Solver solver = createSolver(algorithm);
-            if (solver == null) return Optional.empty();
 
-            var path = solver.solve(maze, start, end);
-            if (path == null || path.points().length == 0) return Optional.empty();
-
-            markPathOnMaze(maze, path, start, end);
-            String out = (unicode ? unicodeRenderer : asciiRenderer).render(maze);
-
-            if (outputFile != null && !outputFile.isEmpty()) {
-                try {
-                    writer.write(maze, outputFile);
-                    return Optional.of(out);
-                } catch (IOException ioe) {
-                    log.error("Не удалось записать решение в файл '{}': {}", outputFile, ioe.getMessage());
-                    return Optional.of(out);
-                }
-            } else {
-                return Optional.of(out);
+            Path path = solver.solve(maze, start, end);
+            if (path == null || path.points().length == 0) {
+                return Optional.empty();
             }
+
+            return renderAndSaveSolution(maze, path, start, end, outputFile, unicode);
         } catch (IllegalArgumentException e) {
-            log.error("Не удалось спарсить точки");
+            log.error("Не удалось спарсить точки", e);
         } catch (Exception e) {
             log.error("Ошибка решения", e);
         }
         return Optional.empty();
+    }
+
+    private Maze loadMaze(String mazeText, String inputFile) throws IOException {
+        return (mazeText != null) ? loadMazeFromString(mazeText) : reader.read(inputFile);
+    }
+
+    private Optional<String> renderAndSaveSolution(
+            Maze maze, Path path, Point start, Point end, String outputFile, boolean unicode) {
+
+        markPathOnMaze(maze, path, start, end);
+        String rendered = renderMaze(maze, unicode);
+        writeSolutionToFileIfNeeded(maze, outputFile);
+        return Optional.of(rendered);
+    }
+
+    private String renderMaze(Maze maze, boolean unicode) {
+        return (unicode ? unicodeRenderer : asciiRenderer).render(maze);
+    }
+
+    private void writeSolutionToFileIfNeeded(Maze maze, String outputFile) {
+        if (outputFile == null || outputFile.isEmpty()) {
+            return;
+        }
+        try {
+            writer.write(maze, outputFile);
+        } catch (IOException ioe) {
+            log.error("Не удалось записать решение в файл '{}'", outputFile, ioe);
+        }
     }
 
     private boolean validateBounds(Maze maze, Point start, Point end) {
@@ -203,8 +218,6 @@ public class MazeService {
         maze.cells()[end.y()][end.x()] = CellType.END;
     }
 
-    private static final String dfs_string = GeneratorAlgorithm.DFS.getValue();
-
     private Generator createGenerator(String algorithm) {
         GeneratorAlgorithm alg = GeneratorAlgorithm.fromValue(algorithm).orElseThrow();
         return switch (alg) {
@@ -212,7 +225,6 @@ public class MazeService {
             case PRIM_TRUE -> new PrimTrueGenerator();
             case PRIM_SIMPLE -> new PrimSimplifiedGenerator();
             case PRIM_MODIFY -> new PrimModifiedGenerator();
-            default -> null;
         };
     }
 
@@ -222,7 +234,6 @@ public class MazeService {
             case DIJKSTRA -> new DijkstraSolver();
             case A_STAR -> new AStarSolver();
             case BFS -> new BFSSolver();
-            default -> null;
         };
     }
 }

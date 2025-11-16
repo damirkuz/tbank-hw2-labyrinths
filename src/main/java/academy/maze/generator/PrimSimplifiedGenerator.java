@@ -1,6 +1,7 @@
 package academy.maze.generator;
 
 import academy.maze.dto.CellType;
+import academy.maze.dto.Point;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,21 +17,21 @@ public class PrimSimplifiedGenerator extends BaseGenerator {
         int cellGridWidth = getCellGridWidth(innerWidth);
         int cellGridHeight = getCellGridHeight(innerHeight);
         boolean[][] vis = new boolean[cellGridHeight][cellGridWidth];
-        List<int[]> visitedCells = new ArrayList<>();
+        List<Point> visitedCells = new ArrayList<>();
 
         // Стартуем с (0, 0)
         int startCellX = 0;
         int startCellY = 0;
         vis[startCellY][startCellX] = true;
         out[toGridY(startCellY)][toGridX(startCellX)] = CellType.PATH;
-        visitedCells.add(new int[] {startCellX, startCellY});
+        visitedCells.add(new Point(startCellX, startCellY));
 
         while (!visitedCells.isEmpty()) {
             // Выбираем случайную посещённую камеру
             int idx = random.nextInt(visitedCells.size());
-            int[] cell = visitedCells.get(idx);
-            int cellX = cell[0];
-            int cellY = cell[1];
+            Point cell = visitedCells.get(idx);
+            int cellX = cell.x();
+            int cellY = cell.y();
 
             // Ищем непосещённых соседей
             List<int[]> neighbors = getUnvisitedNeighbors(cellX, cellY, cellGridWidth, cellGridHeight, vis);
@@ -47,7 +48,7 @@ public class PrimSimplifiedGenerator extends BaseGenerator {
             int neighborY = chosen[1];
 
             carvePassage(out, cellX, cellY, neighborX, neighborY, vis);
-            visitedCells.add(new int[] {neighborX, neighborY});
+            visitedCells.add(new Point(neighborX, neighborY));
         }
     }
 }

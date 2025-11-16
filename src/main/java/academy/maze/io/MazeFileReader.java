@@ -30,11 +30,6 @@ public class MazeFileReader {
             throw new IOException("Первая строка файла пуста");
         }
 
-        if (height < 3 || width < 3) {
-            throw new IOException(
-                    "Лабиринт слишком маленький. Минимальный размер: 3x3, получено: " + width + "x" + height);
-        }
-
         CellType[][] cells = new CellType[height][width];
 
         // Заполняем сетку, преобразуя символы в типы ячеек

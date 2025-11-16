@@ -38,7 +38,8 @@ public class PrimModifiedGenerator extends BaseGenerator {
         }
     }
 
-    private void addFrontier(int cellX, int cellY, int cellGridWidth, int cellGridHeight, boolean[][] visited, List<Node> frontier) {
+    private void addFrontier(
+            int cellX, int cellY, int cellGridWidth, int cellGridHeight, boolean[][] visited, List<Node> frontier) {
         for (Direction d : Direction.values()) {
             int nx = cellX + d.getX(), ny = cellY + d.getY();
             if (isCellInBounds(nx, ny, cellGridWidth, cellGridHeight) && !visited[ny][nx]) {

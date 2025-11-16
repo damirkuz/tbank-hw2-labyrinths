@@ -12,11 +12,7 @@ public enum GeneratorAlgorithm {
     PRIM_MODIFY("prim_modified", "Prim Modified");
 
     private static final Map<String, GeneratorAlgorithm> BY_VALUE =
-        Arrays.stream(values())
-            .collect(
-                Collectors.toMap(
-                    e -> e.value.toLowerCase(),
-                    e -> e));
+            Arrays.stream(values()).collect(Collectors.toMap(e -> e.value.toLowerCase(), e -> e));
 
     private final String value;
     private final String forConsoleView;
@@ -28,8 +24,7 @@ public enum GeneratorAlgorithm {
 
     public static Optional<GeneratorAlgorithm> fromValue(String s) {
         if (s == null) return java.util.Optional.empty();
-        return Optional.ofNullable(
-            BY_VALUE.get(s.toLowerCase()));
+        return Optional.ofNullable(BY_VALUE.get(s.toLowerCase()));
     }
 
     public String getValue() {

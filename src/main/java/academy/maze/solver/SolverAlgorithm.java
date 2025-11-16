@@ -11,7 +11,7 @@ public enum SolverAlgorithm {
     BFS("bfs", "BFS");
 
     private static final Map<String, SolverAlgorithm> BY_VALUE =
-        Arrays.stream(values()).collect(Collectors.toMap(e -> e.value.toLowerCase(), e -> e));
+            Arrays.stream(values()).collect(Collectors.toMap(e -> e.value.toLowerCase(), e -> e));
     private final String value;
     private final String forConsoleView;
 
