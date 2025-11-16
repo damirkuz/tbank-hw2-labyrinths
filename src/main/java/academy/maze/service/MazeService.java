@@ -63,7 +63,6 @@ public class MazeService {
         return generate(algorithm, width, height, outputFile, false);
     }
 
-    // solveFromFile/solveFromString – тоже с флагом
     public Optional<String> solveFromFile(
             String algorithm, String inputFile, String startStr, String endStr, String outputFile, boolean unicode) {
         return solveInternal(algorithm, inputFile, null, startStr, endStr, outputFile, unicode);

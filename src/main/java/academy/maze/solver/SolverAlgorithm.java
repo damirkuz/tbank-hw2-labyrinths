@@ -21,7 +21,7 @@ public enum SolverAlgorithm {
     }
 
     public static Optional<SolverAlgorithm> fromValue(String s) {
-        if (s == null) return java.util.Optional.empty();
+        if (s == null) return Optional.empty();
         return Optional.ofNullable(BY_VALUE.get(s.toLowerCase()));
     }
 

@@ -23,7 +23,7 @@ public enum GeneratorAlgorithm {
     }
 
     public static Optional<GeneratorAlgorithm> fromValue(String s) {
-        if (s == null) return java.util.Optional.empty();
+        if (s == null) return Optional.empty();
         return Optional.ofNullable(BY_VALUE.get(s.toLowerCase()));
     }
 
