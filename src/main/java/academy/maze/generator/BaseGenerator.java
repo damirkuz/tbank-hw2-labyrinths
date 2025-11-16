@@ -30,24 +30,24 @@ public abstract class BaseGenerator implements Generator {
     protected abstract void privateGenerate(CellType[][] out, int innerWidth, int innerHeight);
 
     // Координатные преобразования
-    protected int ox(int cx) {
-        return 1 + 2 * cx;
+    protected int toGridX(int cellX) {
+        return 1 + 2 * cellX;
     }
 
-    protected int oy(int cy) {
-        return 1 + 2 * cy;
+    protected int toGridY(int cellY) {
+        return 1 + 2 * cellY;
     }
 
-    protected int camW(int innerWidth) {
+    protected int getCellGridWidth(int innerWidth) {
         return (innerWidth + 1) / 2;
     }
 
-    protected int camH(int innerHeight) {
+    protected int getCellGridHeight(int innerHeight) {
         return (innerHeight + 1) / 2;
     }
 
-    protected boolean inCamBounds(int cx, int cy, int CW, int CH) {
-        return cx >= 0 && cx < CW && cy >= 0 && cy < CH;
+    protected boolean isCellInBounds(int cellX, int cellY, int cellWidth, int cellHeight) {
+        return cellX >= 0 && cellX < cellWidth && cellY >= 0 && cellY < cellHeight;
     }
 
     /** Пробивает перегородку между двумя соседними камерами. */
@@ -55,9 +55,9 @@ public abstract class BaseGenerator implements Generator {
         int dx = Integer.signum(nx - cx);
         int dy = Integer.signum(ny - cy);
 
-        out[oy(cy)][ox(cx)] = CellType.PATH; // исходная камера
-        out[oy(cy) + dy][ox(cx) + dx] = CellType.PATH; // перегородка
-        out[oy(ny)][ox(nx)] = CellType.PATH; // целевая камера
+        out[toGridY(cy)][toGridX(cx)] = CellType.PATH; // исходная камера
+        out[toGridY(cy) + dy][toGridX(cx) + dx] = CellType.PATH; // перегородка
+        out[toGridY(ny)][toGridX(nx)] = CellType.PATH; // целевая камера
         vis[ny][nx] = true;
     }
 
@@ -77,7 +77,7 @@ public abstract class BaseGenerator implements Generator {
         List<int[]> neighbors = new ArrayList<>();
         for (Direction d : Direction.values()) {
             int nx = cx + d.getX(), ny = cy + d.getY();
-            if (inCamBounds(nx, ny, CW, CH) && !vis[ny][nx]) {
+            if (isCellInBounds(nx, ny, CW, CH) && !vis[ny][nx]) {
                 neighbors.add(new int[] {nx, ny, d.getX(), d.getY()});
             }
         }

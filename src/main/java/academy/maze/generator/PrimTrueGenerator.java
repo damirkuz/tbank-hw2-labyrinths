@@ -12,38 +12,39 @@ import java.util.List;
  */
 public class PrimTrueGenerator extends BaseGenerator {
 
-    private record Edge(int cx, int cy, int nx, int ny) {}
+    private record Edge(int cellX, int cellY, int neighbourX, int neighborY) {}
 
     @Override
-    protected void privateGenerate(CellType[][] out, int innerW, int innerH) {
-        int CW = camW(innerW), CH = camH(innerH);
-        boolean[][] vis = new boolean[CH][CW];
+    protected void privateGenerate(CellType[][] out, int innerWidth, int innerHeight) {
+        int cellGridWidth = getCellGridWidth(innerWidth);
+        int cellGridHeight = getCellGridHeight(innerHeight);
+        boolean[][] vis = new boolean[cellGridHeight][cellGridWidth];
         List<Edge> frontier = new ArrayList<>();
 
         int sx = 0;
         int sy = 0;
         vis[sy][sx] = true;
-        out[oy(sy)][ox(sx)] = CellType.PATH;
+        out[toGridY(sy)][toGridX(sx)] = CellType.PATH;
 
         // добавить рёбра из старта
-        addEdges(sx, sy, CW, CH, vis, frontier);
+        addEdges(sx, sy, cellGridWidth, cellGridHeight, vis, frontier);
 
         while (!frontier.isEmpty()) {
             int idx = random.nextInt(frontier.size());
             Edge e = frontier.remove(idx);
-            if (vis[e.ny][e.nx]) continue;
+            if (vis[e.neighborY][e.neighbourX]) continue;
 
-            carvePassage(out, e.cx, e.cy, e.nx, e.ny, vis);
+            carvePassage(out, e.cellX, e.cellY, e.neighbourX, e.neighborY, vis);
             // добавляем рёбра дальше
-            addEdges(e.nx, e.ny, CW, CH, vis, frontier);
+            addEdges(e.neighbourX, e.neighborY, cellGridWidth, cellGridHeight, vis, frontier);
         }
     }
 
-    private void addEdges(int cx, int cy, int CW, int CH, boolean[][] vis, List<Edge> frontier) {
+    private void addEdges(int cellX, int cellY, int cellGridWidth, int cellGridHeight, boolean[][] visited, List<Edge> frontier) {
         for (Direction d : Direction.values()) {
-            int nx = cx + d.getX(), ny = cy + d.getY();
-            if (inCamBounds(nx, ny, CW, CH) && !vis[ny][nx]) {
-                frontier.add(new Edge(cx, cy, nx, ny));
+            int nx = cellX + d.getX(), ny = cellY + d.getY();
+            if (isCellInBounds(nx, ny, cellGridWidth, cellGridHeight) && !visited[ny][nx]) {
+                frontier.add(new Edge(cellX, cellY, nx, ny));
             }
         }
     }

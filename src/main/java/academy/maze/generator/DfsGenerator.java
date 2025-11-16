@@ -12,8 +12,8 @@ public class DfsGenerator extends BaseGenerator {
 
     @Override
     protected void privateGenerate(CellType[][] out, int innerWidth, int innerHeight) {
-        int CW = camW(innerWidth);
-        int CH = camH(innerHeight);
+        int CW = getCellGridWidth(innerWidth);
+        int CH = getCellGridHeight(innerHeight);
         // создаём сетку "камер"
         boolean[][] visited = new boolean[CH][CW];
 
@@ -24,12 +24,12 @@ public class DfsGenerator extends BaseGenerator {
     private void dfsCarve(CellType[][] out, int cx, int cy, boolean[][] visited, int CW, int CH) {
         // помечаем текущую клетку как посещённую
         visited[cy][cx] = true;
-        out[oy(cy)][ox(cx)] = CellType.PATH;
+        out[toGridY(cy)][toGridX(cx)] = CellType.PATH;
 
         for (Direction d : getRandomDirections()) {
             // берём случайную соседнюю камеру
             int ncx = cx + d.getX(), ncy = cy + d.getY();
-            if (!inCamBounds(ncx, ncy, CW, CH) || visited[ncy][ncx]) continue;
+            if (!isCellInBounds(ncx, ncy, CW, CH) || visited[ncy][ncx]) continue;
 
             // пробиваем проход между текущей камерой и случайной
             carvePassage(out, cx, cy, ncx, ncy, visited);

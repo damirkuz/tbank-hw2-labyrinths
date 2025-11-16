@@ -12,25 +12,28 @@ import java.util.List;
 public class PrimSimplifiedGenerator extends BaseGenerator {
 
     @Override
-    protected void privateGenerate(CellType[][] out, int innerW, int innerH) {
-        int CW = camW(innerW), CH = camH(innerH);
-        boolean[][] vis = new boolean[CH][CW];
+    protected void privateGenerate(CellType[][] out, int innerWidth, int innerHeight) {
+        int cellGridWidth = getCellGridWidth(innerWidth);
+        int cellGridHeight = getCellGridHeight(innerHeight);
+        boolean[][] vis = new boolean[cellGridHeight][cellGridWidth];
         List<int[]> visitedCells = new ArrayList<>();
 
         // Стартуем с (0, 0)
-        int sx = 0, sy = 0;
-        vis[sy][sx] = true;
-        out[oy(sy)][ox(sx)] = CellType.PATH;
-        visitedCells.add(new int[] {sx, sy});
+        int startCellX = 0;
+        int startCellY = 0;
+        vis[startCellY][startCellX] = true;
+        out[toGridY(startCellY)][toGridX(startCellX)] = CellType.PATH;
+        visitedCells.add(new int[] {startCellX, startCellY});
 
         while (!visitedCells.isEmpty()) {
             // Выбираем случайную посещённую камеру
             int idx = random.nextInt(visitedCells.size());
             int[] cell = visitedCells.get(idx);
-            int cx = cell[0], cy = cell[1];
+            int cellX = cell[0];
+            int cellY = cell[1];
 
             // Ищем непосещённых соседей
-            List<int[]> neighbors = getUnvisitedNeighbors(cx, cy, CW, CH, vis);
+            List<int[]> neighbors = getUnvisitedNeighbors(cellX, cellY, cellGridWidth, cellGridHeight, vis);
 
             if (neighbors.isEmpty()) {
                 // У этой камеры нет непосещённых соседей — удаляем из списка
@@ -40,10 +43,11 @@ public class PrimSimplifiedGenerator extends BaseGenerator {
 
             // Выбираем случайного соседа
             int[] chosen = neighbors.get(random.nextInt(neighbors.size()));
-            int nx = chosen[0], ny = chosen[1];
+            int neighborX = chosen[0];
+            int neighborY = chosen[1];
 
-            carvePassage(out, cx, cy, nx, ny, vis);
-            visitedCells.add(new int[] {nx, ny});
+            carvePassage(out, cellX, cellY, neighborX, neighborY, vis);
+            visitedCells.add(new int[] {neighborX, neighborY});
         }
     }
 }

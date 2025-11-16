@@ -13,36 +13,36 @@ import java.util.List;
  */
 public class PrimModifiedGenerator extends BaseGenerator {
 
-    private record Node(int px, int py, int cx, int cy) {}
+    private record Node(int parentX, int parentY, int cellX, int cellY) {}
 
     @Override
     protected void privateGenerate(CellType[][] out, int innerW, int innerH) {
-        int CW = camW(innerW), CH = camH(innerH);
+        int CW = getCellGridWidth(innerW), CH = getCellGridHeight(innerH);
         boolean[][] vis = new boolean[CH][CW];
         List<Node> frontier = new ArrayList<>();
 
         int sx = random.nextInt(CW);
         int sy = random.nextInt(CH);
         vis[sy][sx] = true;
-        out[oy(sy)][ox(sx)] = CellType.PATH;
+        out[toGridY(sy)][toGridX(sx)] = CellType.PATH;
         addFrontier(sx, sy, CW, CH, vis, frontier);
 
         while (!frontier.isEmpty()) {
             int idx = random.nextInt(frontier.size());
             Node n = frontier.remove(idx);
 
-            if (vis[n.cy][n.cx]) continue;
+            if (vis[n.cellY][n.cellX]) continue;
 
-            carvePassage(out, n.px, n.py, n.cx, n.cy, vis);
-            addFrontier(n.cx, n.cy, CW, CH, vis, frontier);
+            carvePassage(out, n.parentX, n.parentY, n.cellX, n.cellY, vis);
+            addFrontier(n.cellX, n.cellY, CW, CH, vis, frontier);
         }
     }
 
-    private void addFrontier(int cx, int cy, int CW, int CH, boolean[][] vis, List<Node> frontier) {
+    private void addFrontier(int cellX, int cellY, int cellGridWidth, int cellGridHeight, boolean[][] visited, List<Node> frontier) {
         for (Direction d : Direction.values()) {
-            int nx = cx + d.getX(), ny = cy + d.getY();
-            if (inCamBounds(nx, ny, CW, CH) && !vis[ny][nx]) {
-                frontier.add(new Node(cx, cy, nx, ny));
+            int nx = cellX + d.getX(), ny = cellY + d.getY();
+            if (isCellInBounds(nx, ny, cellGridWidth, cellGridHeight) && !visited[ny][nx]) {
+                frontier.add(new Node(cellX, cellY, nx, ny));
             }
         }
     }

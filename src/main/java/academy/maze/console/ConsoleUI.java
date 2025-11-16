@@ -69,21 +69,21 @@ public class ConsoleUI {
         int width = readPositiveInt("Введите ширину лабиринта: ");
         int height = readPositiveInt("Введите высоту лабиринта: ");
 
-        boolean unicode = askSomething("Включить псевдографику Unicode?");
+        boolean unicode = askConfirm("Включить псевдографику Unicode?");
 
         System.out.println();
         Optional<String> mazeMaybe = app.generate(algorithm, width, height, null, unicode);
 
         mazeMaybe.ifPresent(ms -> {
             System.out.println(mazeMaybe.orElse("Лабиринта нет"));
-            boolean solutionChoice = askSomething("Желаете решить лабиринт?");
+            boolean solutionChoice = askConfirm("Желаете решить лабиринт?");
             if (solutionChoice) {
                 solveMaze(ms, unicode);
             }
         });
     }
 
-    private boolean askSomething(String question) {
+    private boolean askConfirm(String question) {
         System.out.print(question + " (y/n): ");
         String s = scanner.nextLine().trim().toLowerCase();
         return s.equals("y") || s.equals("yes");
@@ -115,7 +115,7 @@ public class ConsoleUI {
         String endStr = scanner.nextLine().trim();
 
         String outputFile = null;
-        boolean saveChoice = askSomething("Сохранить решение в файл?");
+        boolean saveChoice = askConfirm("Сохранить решение в файл?");
         if (saveChoice) {
             System.out.print("Введите имя файла (например, solution.txt): ");
             outputFile = scanner.nextLine().trim();
